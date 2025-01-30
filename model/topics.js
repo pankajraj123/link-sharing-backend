@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const TopicSchema = new mongoose.Schema({
+const topicSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -19,9 +19,9 @@ const TopicSchema = new mongoose.Schema({
     },
     visibility: {
         type: String,
-        enum: ['public', 'private'], 
-        default: 'public' 
+        enum:['public', 'private'],
     }
 });
 
-module.exports = mongoose.model("Topics", TopicSchema);
+const topicModel = mongoose.model("topics", topicSchema);
+ module.exports=topicModel;

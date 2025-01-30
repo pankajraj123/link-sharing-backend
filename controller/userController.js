@@ -48,7 +48,10 @@ exports.login= async (req,res)=>{
      } 
      const loged= await bcrypt.compare(password,user.password)
      if(loged){
-        res.send('user login sucessfully');
+        res.send({
+            email:email,
+            username:user.username,
+            message:'user login sucessfully'});
      }else{
         res.send('login failed')
     }
