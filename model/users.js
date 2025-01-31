@@ -35,6 +35,12 @@ const UserSchema= new mongoose.Schema({
     },
     lastupdate:{
         type:Date
+    },
+    resetToken:{
+        type: String
+    },
+    resetTokenExpiration:{
+        type:Date
     }
 });
 

@@ -2,7 +2,7 @@ const  topics= require ('../model/topics');
 
 exports.createTopic = async (req, res) => {
     try {
-        const { name, visibility } = req.body;
+        const { name, visibility} = req.body;
 
         if (!name || !visibility) {
             return res.status(400).json({ message: "All Fields are Required" });
@@ -29,9 +29,12 @@ exports.createTopic = async (req, res) => {
 
 exports.getTopic=async(req,res)=>{
     try{
-       const topic=await topics.find();
-       res.send(topic);
+       const topic=await topics.find.populate('createdby','name',email);
+       res.status(200).json(topic);
     }catch(error){
-     res.send("topic not get sucessfully");
+     res.status(500).json({
+        message:"topic not get sucessfully",
+        error:error.message
+    });
     }
 }

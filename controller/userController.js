@@ -21,7 +21,7 @@ exports.register = async (req, res) => {
             res.send('user is alerady exist')
             return 
         }
-      
+        
     const hashpassword= await bcrypt.hash(password,10);
     password=hashpassword;
     const data=new Users({
