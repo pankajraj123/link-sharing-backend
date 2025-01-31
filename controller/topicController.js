@@ -27,14 +27,14 @@ exports.createTopic = async (req, res) => {
     }
 };
 
-exports.getTopic=async(req,res)=>{
-    try{
-       const topic=await topics.find.populate('createdby','name',email);
-       res.status(200).json(topic);
-    }catch(error){
-     res.status(500).json({
-        message:"topic not get sucessfully",
-        error:error.message
-    });
-    }
-}
+// exports.getTopic=async(req,res)=>{
+//     try{
+//        const topic=await topics.find.populate('createdby','name',email);
+//        res.status(200).json(topic);
+//     }catch(error){
+//      res.status(500).json({
+//         message:"topic not get sucessfully",
+//         error:error.message
+//     });
+//     }
+// }
