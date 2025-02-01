@@ -44,22 +44,22 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
+     
 
         const user = await Users.findOne({ email });
-
 
         if (!user) {
             res.send("user is not exist")
             return
         }
+   
         const loged = await bcrypt.compare(password, user.password)
-        const token = jwt.sign({ email: user.email, username: user.username }, process.env.SECRET_KEY, {
-            expiresIn: "1h",
+        const token = jwt.sign({user}, process.env.SECRET_KEY, {
+            expiresIn: 1000*60,
         });
         if (loged) {
             res.send({
-                email: email,
-                username: user.username,
+                username:user.username,
                 token: token,
                 message: 'user login sucessfully'
             });
@@ -71,10 +71,13 @@ exports.login = async (req, res) => {
     }
 }
 
+
+
+
 exports.forgetPassword = async (req, res) => {
     const { email } = req.body;
     const user = await Users.findOne({ email:email });
-
+    // console.log(user,"before ");
     if (!user) {
       return res.status(404).send('User not found');
     }
@@ -82,14 +85,19 @@ exports.forgetPassword = async (req, res) => {
     user.resetPasswordToken = token;
     user.resetPasswordExpires = Date.now() + 10*60*1000; 
     await user.save();
-  
-    const resetUrl = `http://localhost:3000/resetPassword/${token}`
+    
+    // console.log(user)
+
+
+    const resetUrl = `http://localhost:3001/resetPassword/${token}`
     const mailOptions = {
-      to: user.email,
+      to: email,
       from:process.env.MY_GMAIL,
       subject: 'Password Reset Request',
       text: `Please click the link to reset your password: ${resetUrl}`
     };
+    // console.log(mailOptions)
+    // console.log(process.env.MY_GMAIL);
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         secure: true,
@@ -98,9 +106,14 @@ exports.forgetPassword = async (req, res) => {
           pass:process.env.MY_GMAIL_PASSWORD
         }
       });
-
+      // console.log('hii')
+      // console.log(process.env.MY_GMAIL)
+      // console.log(process.env.MY_GMAIL_PASSWORD)
+     console.log("hii i am upper of sendmail")
+     console.log()
     transporter.sendMail(mailOptions, (err, response) => {
       if (err) {
+        console.log(err);
         return res.status(500).send('Error sending email');
       }
       res.status(200).send('Password reset email sent');
@@ -108,7 +121,6 @@ exports.forgetPassword = async (req, res) => {
   };
 
   exports.resetPassword = async (req, res) => {
-    console.log("working")
     const { token } = req.params;
     const { newPassword } = req.body;
   

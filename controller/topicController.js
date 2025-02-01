@@ -1,10 +1,14 @@
 const  topics= require ('../model/topics');
+const user = require ('../model/users');
 
 exports.createTopic = async (req, res) => {
     try {
-        const { name, visibility} = req.body;
+      
+        const { name, visibility,} = req.body;
+        const id= req.user.user._id;
 
-        if (!name || !visibility) {
+        if (!name || !visibility || !id) {
+            console.log("hello");
             return res.status(400).json({ message: "All Fields are Required" });
         }
 
@@ -16,7 +20,8 @@ exports.createTopic = async (req, res) => {
 
         let topicData = new topics({
             name: name,
-            visibility: visibility
+            visibility: visibility,
+            createdby: id,
         });
 
         await topicData.save();
@@ -27,14 +32,3 @@ exports.createTopic = async (req, res) => {
     }
 };
 
-// exports.getTopic=async(req,res)=>{
-//     try{
-//        const topic=await topics.find.populate('createdby','name',email);
-//        res.status(200).json(topic);
-//     }catch(error){
-//      res.status(500).json({
-//         message:"topic not get sucessfully",
-//         error:error.message
-//     });
-//     }
-// }

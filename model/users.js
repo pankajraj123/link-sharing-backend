@@ -36,19 +36,12 @@ const UserSchema= new mongoose.Schema({
     lastupdate:{
         type:Date
     },
-    resetToken:{
-        type: String
-    },
-    resetTokenExpiration:{
-        type:Date
-    },
     resetPasswordToken:{
         type:String
     },
     resetPasswordExpires: { 
-        type: Date 
-    }
-
+        type: Date ,
+    },
 });
 
 module.exports= mongoose.model("users",UserSchema);
