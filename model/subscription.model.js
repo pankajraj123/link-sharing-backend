@@ -1,16 +1,21 @@
 const mongoose = require('mongoose');
 
 const subscriptionSchema = new mongoose.Schema({
-    topic:{
+    topicId:{
       type: mongoose.Schema.Types.ObjectId,
       ref:'topics'
     },
-    user:{
+    userId:{
         type: mongoose.Schema.Types.ObjectId,
         ref:'user'
     },
-    isRead:{
-        type:Boolean
+    seriousness:{
+        type:String,
+        enum:["Casual","Seriousness","very Serious"],
+    },
+    createdAt:{
+        type:Date,
+        default:Date.now
     }
 });
 

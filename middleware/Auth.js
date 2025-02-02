@@ -4,13 +4,17 @@ dotenv.config();
 
 const authenticate = (req, res, next) => {
   const token = req.header('Authorization')?.split(' ')[1]; 
+
+  
   if (!token) {
     return res.status(403).json({ message: 'Access denied. No token provided.' });
   }
- 
+
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY); 
     req.user = decoded;  
+    console.log('hello i am in before decode mode ')
+    console.log("i am in decode mode ")
     next();  
   } catch (error) {
     console.log(error);

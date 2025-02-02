@@ -55,7 +55,7 @@ exports.login = async (req, res) => {
    
         const loged = await bcrypt.compare(password, user.password)
         const token = jwt.sign({user}, process.env.SECRET_KEY, {
-            expiresIn: 1000*60,
+            expiresIn:'1h',
         });
         if (loged) {
             res.send({
@@ -89,7 +89,7 @@ exports.forgetPassword = async (req, res) => {
     // console.log(user)
 
 
-    const resetUrl = `http://localhost:3001/resetPassword/${token}`
+    const resetUrl = `http://localhost:3000/resetPassword/${token}`
     const mailOptions = {
       to: email,
       from:process.env.MY_GMAIL,

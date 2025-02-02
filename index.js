@@ -4,6 +4,7 @@ const bodyParser=require('body-parser');
 const mongoose = require('mongoose');
 const userRouter=require('./routes/register');
 const topicRouter= require('./routes/topic.route')
+const subscribedRouter=require('./routes/subscribe.route')
 
 const PORT= 8000;
 
@@ -16,6 +17,7 @@ app.use(express.json());
 
 app.use("/",userRouter);
 app.use("/",topicRouter);
+app.use("/",subscribedRouter);
 
 
 mongoose.connect('mongodb://localhost:27017/linksharing')
