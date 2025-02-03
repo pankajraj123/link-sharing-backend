@@ -5,5 +5,6 @@ const authenticate = require('../middleware/Auth');
 
 subscribedRouter.post('/subscribe/:id',authenticate,subcriptioncontroller.subscribed)
 subscribedRouter.get('/getTotalSubscription',authenticate,subcriptioncontroller.getTotalSubscription)
+subscribedRouter.delete('/ubsubscribe/:topicid',authenticate,subcriptioncontroller.unsubscribe);
 
 module.exports=subscribedRouter;

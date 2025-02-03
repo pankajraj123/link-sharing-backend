@@ -7,7 +7,7 @@ const topicSchema = new mongoose.Schema({
     },
     createdby: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Users'
+        ref: 'users'
     },
     dateCreated: {
         type: Date,
@@ -15,13 +15,13 @@ const topicSchema = new mongoose.Schema({
     },
     lastUpdated: {
         type: Date,
-        default: Date.now 
+        default: Date.now
     },
     visibility: {
         type: String,
-        enum:['public', 'private'],
+        enum: ['public', 'private'],
     }
 });
 
 const topicModel = mongoose.model("topics", topicSchema);
- module.exports=topicModel;
+module.exports = topicModel;

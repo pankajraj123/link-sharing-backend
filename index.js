@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const userRouter=require('./routes/register');
 const topicRouter= require('./routes/topic.route')
 const subscribedRouter=require('./routes/subscribe.route')
+const resourceRouter=require('./routes/resource.route')
 
 const PORT= 8000;
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use("/",userRouter);
 app.use("/",topicRouter);
 app.use("/",subscribedRouter);
+app.use("/",resourceRouter);
 
 
 mongoose.connect('mongodb://localhost:27017/linksharing')

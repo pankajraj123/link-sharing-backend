@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
 
 const resourceSchema = new mongoose.Schema({
-    description:{
-        type:String,
-        required:true
+    description: {
+        type: String,
+        required: true
     },
     createdby: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users'
     },
-    topic:{
-     type: mongoose.Schema.Types.ObjectId,
+    topic: {
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'topics'
     },
     dateCreated: {
@@ -19,9 +19,9 @@ const resourceSchema = new mongoose.Schema({
     },
     lastUpdated: {
         type: Date,
-        default: Date.now 
+        default: Date.now
     }
 });
 
 const resourceModel = mongoose.model("resource", resourceSchema);
- module.exports=resourceModel;
+module.exports = resourceModel;

@@ -1,23 +1,23 @@
 const mongoose = require('mongoose');
 
 const subscriptionSchema = new mongoose.Schema({
-    topicId:{
-      type: mongoose.Schema.Types.ObjectId,
-      ref:'topics'
-    },
-    userId:{
+    topicId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:'user'
+        ref: 'topics'
     },
-    seriousness:{
-        type:String,
-        enum:["Casual","Seriousness","very Serious"],
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
     },
-    createdAt:{
-        type:Date,
-        default:Date.now
+    seriousness: {
+        type: String,
+        enum: ["Casual", "Serious", "very Serious"],
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
     }
 });
 
 const subscriptionModel = mongoose.model("subscription", subscriptionSchema);
-module.exports=subscriptionModel;
+module.exports = subscriptionModel;

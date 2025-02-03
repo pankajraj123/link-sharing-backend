@@ -1,18 +1,18 @@
 const mongoose = require('mongoose');
 
 const readingSchema = new mongoose.Schema({
-    resource:{
-      type: mongoose.Schema.Types.ObjectId,
-      ref:'resource'
-    },
-    user:{
+    resource: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:'user'
+        ref: 'resource'
     },
-    isRead:{
-        type:Boolean
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
+    },
+    isRead: {
+        type: Boolean
     }
 });
 
 const readingModel = mongoose.model("readingItem", readingSchema);
- module.exports=readingModel;
+module.exports = readingModel;
