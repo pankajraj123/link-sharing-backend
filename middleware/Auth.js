@@ -4,12 +4,9 @@ dotenv.config();
 
 const authenticate = (req, res, next) => {
   const token = req.header('Authorization')?.split(' ')[1];
-
-
   if (!token) {
     return res.status(403).json({ message: 'Access denied. No token provided.' });
   }
-
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
     req.user = decoded;
@@ -19,5 +16,6 @@ const authenticate = (req, res, next) => {
     return res.status(400).json({ message: 'Invalid or expired token.' });
   }
 };
+
 
 module.exports = authenticate;

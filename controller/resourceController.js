@@ -5,9 +5,9 @@ exports.createresource= async(req,res)=>{
     try{
    const  id= req.user.user._id;
    console.log(req.user.user)
-   console.log(id)
+  
     const {description}=req.body;
-    console.log(description);
+
     const {topicId}= req.params;
    const topicdata=await topics.findById(topicId)
     if(!topicdata){

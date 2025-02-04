@@ -6,10 +6,12 @@ const userRouter=require('./routes/register');
 const topicRouter= require('./routes/topic.route')
 const subscribedRouter=require('./routes/subscribe.route')
 const resourceRouter=require('./routes/resource.route')
+const dotenv=require('dotenv');
 
-const PORT= 8000;
+dotenv.config();
 
 const cors=require('cors');
+
 
 app.use(cors());
 
@@ -34,6 +36,6 @@ mongoose.connect('mongodb://localhost:27017/linksharing')
   res.send("hello world");
  })
 
-app.listen(PORT,(req,res)=>{
+app.listen(process.env.PORT,(req,res)=>{
     console.log("hello i am at the port no 8000")
 })

@@ -27,7 +27,7 @@ exports.register = async (req, res) => {
     res.send('user is alerady exist')
     return
   }
-
+   console.log("hello")
   const hashpassword = await bcrypt.hash(password, 10);
   password = hashpassword;
   const data = new Users({
@@ -110,7 +110,6 @@ exports.forgetPassword = async (req, res) => {
   await user.save();
 
   // console.log(user)
-
 
   const resetUrl = `http://localhost:3000/resetPassword/${token}`
   const mailOptions = {

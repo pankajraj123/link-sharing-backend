@@ -10,7 +10,6 @@ exports.createTopic = async (req, res) => {
     const { name, visibility, } = req.body;
     const id = req.user.user._id;
     if (!name || !visibility || !id) {
-      console.log("hello");
       return res.status(400).json({ message: "All Fields are Required" });
     }
     const isExist = await topics.findOne({ name });
@@ -73,6 +72,7 @@ exports.getpublictopic = async (req, res) => {
 
     if (publiclist.length > 0) {
       publictopic = publiclist.map((topic) => ({
+        _id:topic._id,
         name: topic.name,
         username: topic.createdby.username,
         visibility: topic.visibility,
@@ -103,4 +103,19 @@ exports.deleteTopic = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 
+}
+
+
+exports.editTopic = async (req,res)=>{
+  const {name,visibility} = req.body;
+  const {id} = req.params;
+  try {
+   const topicdata = await topics.findOne({ _id: id});
+   if(!topicdata){
+    return res.status(404).json({message: 'Topic not found'})
+   }
+   await topics.updateOne({ _id: id }, { $set: { name: name, visibility:visibility}})
+  }catch(error){
+    return res.status(500).json({message: 'Internal Server Error', error});
+  }
 }
