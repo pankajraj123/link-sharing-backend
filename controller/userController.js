@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto')
+const { v4: uuidv4 } = require('uuid');
 dotenv.config();
 
 exports.register = async (req, res) => {
@@ -27,10 +28,11 @@ exports.register = async (req, res) => {
     res.send('user is alerady exist')
     return
   }
-   console.log("hello")
+
   const hashpassword = await bcrypt.hash(password, 10);
   password = hashpassword;
   const data = new Users({
+    uuid:uuidv4(),
     email,
     username,
     password,
@@ -45,12 +47,14 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({ message: "All fields are required" })
+    }
 
     const user = await Users.findOne({ email });
 
     if (!user) {
-      res.send("user is not exist")
-      return
+      return res.status(404).json({ message: "user is not exist" })
     }
 
     const loged = await bcrypt.compare(password, user.password)
@@ -77,9 +81,15 @@ exports.changePassword = async (req, res) => {
 
     const { oldPassword, newPassword } = req.body;
 
-    console.log(req.body)
+    if (!oldPassword || newPassword) {
+      return res.status(400).json({ message: "All fields are required" })
+    }
+
     const userdetail = await Users.findOne({ _id: id });
 
+    if (!userdetail) {
+      return res.status(404).json({ message: "user is not exist" })
+    }
 
     const checkPassword = await bcrypt.compare(oldPassword, userdetail.password);
 
@@ -99,18 +109,20 @@ exports.changePassword = async (req, res) => {
 
 exports.forgetPassword = async (req, res) => {
   const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
   const user = await Users.findOne({ email: email });
-  // console.log(user,"before ");
+
   if (!user) {
     return res.status(404).send('User not found');
   }
+
   const token = crypto.randomBytes(20).toString('hex');
   user.resetPasswordToken = token;
   user.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
   await user.save();
-
-  // console.log(user)
-
   const resetUrl = `http://localhost:3000/resetPassword/${token}`
   const mailOptions = {
     to: email,
@@ -118,8 +130,7 @@ exports.forgetPassword = async (req, res) => {
     subject: 'Password Reset Request',
     text: `Please click the link to reset your password: ${resetUrl}`
   };
-  // console.log(mailOptions)
-  // console.log(process.env.MY_GMAIL);
+
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     secure: true,
@@ -128,9 +139,7 @@ exports.forgetPassword = async (req, res) => {
       pass: process.env.MY_GMAIL_PASSWORD
     }
   });
-  // console.log('hii')
-  // console.log(process.env.MY_GMAIL)
-  // console.log(process.env.MY_GMAIL_PASSWORD)
+ 
   console.log("hii i am upper of sendmail")
   console.log()
   transporter.sendMail(mailOptions, (err, response) => {
@@ -146,6 +155,10 @@ exports.forgetPassword = async (req, res) => {
 exports.resetPassword = async (req, res) => {
   const { token } = req.params;
   const { newPassword } = req.body;
+
+  if(!token || !newPassword){
+    return res.status(400).json({ message: "Token and new password are required" });
+  }
 
   const user = await Users.findOne({
     resetPasswordToken: token,

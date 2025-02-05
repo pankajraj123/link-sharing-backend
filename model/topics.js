@@ -5,6 +5,10 @@ const topicSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    uuid:{
+        type:String,
+        required:true
+    },
     createdby: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users'

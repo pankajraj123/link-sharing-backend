@@ -9,9 +9,13 @@ const subscriptionSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users'
     },
+    uuid:{
+        type:String,
+        required:true
+    },
     seriousness: {
         type: String,
-        enum: ["Casual", "Serious", "very Serious"],
+        enum: ["Casual", "Serious", "Very Serious"],
     },
     createdAt: {
         type: Date,
