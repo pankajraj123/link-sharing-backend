@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from  'mongoose';
 
 const readingSchema = new mongoose.Schema({
     resource: {
@@ -7,7 +7,6 @@ const readingSchema = new mongoose.Schema({
     },
     uuid:{
         type:String,
-        required:true
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -19,4 +18,6 @@ const readingSchema = new mongoose.Schema({
 });
 
 const readingModel = mongoose.model("readingItem", readingSchema);
-module.exports = readingModel;
+
+
+export default readingModel

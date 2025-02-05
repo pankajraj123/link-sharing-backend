@@ -1,13 +1,12 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const resourceSchema = new mongoose.Schema({
     description: {
         type: String,
-        required: true
+        required: true,
     },
     uuid:{
         type:String,
-        required:true
     },
     createdby: {
         type: mongoose.Schema.Types.ObjectId,
@@ -28,4 +27,5 @@ const resourceSchema = new mongoose.Schema({
 });
 
 const resourceModel = mongoose.model("resource", resourceSchema);
-module.exports = resourceModel;
+
+export default resourceModel

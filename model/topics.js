@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from  'mongoose';
 
 const topicSchema = new mongoose.Schema({
     name: {
@@ -7,13 +7,12 @@ const topicSchema = new mongoose.Schema({
     },
     uuid:{
         type:String,
-        required:true
     },
     createdby: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users'
     },
-    dateCreated: {
+    dateCreated:{
         type: Date,
         default: Date.now
     },
@@ -21,11 +20,12 @@ const topicSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    visibility: {
+    visibility:{
         type: String,
         enum: ['public', 'private'],
     }
 });
 
 const topicModel = mongoose.model("topics", topicSchema);
-module.exports = topicModel;
+
+export default topicModel;

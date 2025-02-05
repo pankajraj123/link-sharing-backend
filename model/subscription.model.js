@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const subscriptionSchema = new mongoose.Schema({
     topicId: {
@@ -11,7 +11,6 @@ const subscriptionSchema = new mongoose.Schema({
     },
     uuid:{
         type:String,
-        required:true
     },
     seriousness: {
         type: String,
@@ -24,4 +23,4 @@ const subscriptionSchema = new mongoose.Schema({
 });
 
 const subscriptionModel = mongoose.model("subscription", subscriptionSchema);
-module.exports = subscriptionModel;
+export default  subscriptionModel;

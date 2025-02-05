@@ -1,12 +1,13 @@
- const express=require('express');
-  const topicRouter= express.Router();
- const topicController=require('../controller/topicController');
- const authenticate=require('../middleware/Auth')
+import express from 'express'
+import {createTopic,getUserTopics,getpublictopic,deleteTopic,editTopic} from '../controller/topicController.js';
+ import{authenticate} from '../middleware/Auth.js'
+ const topicRouter= express.Router();
 
-topicRouter.post('/topiccreate',authenticate,topicController.createTopic);
-topicRouter.get('/getUserTopic',authenticate,topicController.getUserTopics);
-topicRouter.delete('/deleteTopic',authenticate,topicController.deleteTopic);
-topicRouter.get('/getPublicTopic',authenticate,topicController.getpublictopic);
+topicRouter.post('/topiccreate',authenticate,createTopic);
+topicRouter.get('/getUserTopic',authenticate,getUserTopics);
+topicRouter.delete('/deleteTopic/:topicId',authenticate,deleteTopic);
+topicRouter.put('/editTopic/:topicId',authenticate,editTopic);
+topicRouter.get('/getPublicTopic',authenticate,getpublictopic);
 
 
-module.exports=topicRouter;
+export default topicRouter;

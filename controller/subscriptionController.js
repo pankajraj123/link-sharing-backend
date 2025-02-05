@@ -1,8 +1,9 @@
-const subscription = require('../model/subscription.model')
-const topics = require('../model/topics')
-const { v4: uuidv4 } = require('uuid');
+import topics from '../model/topics.js'
+import subscription from '../model/subscription.model.js'
+import {v4 as uuidv4} from 'uuid'
 
-exports.subscribed = async (req, res) => {
+
+export const subscribed = async (req, res) => {
   const { seriousness } = req.body;
   const { topicId } = req.params;
   const userid = req.user.user._id;
@@ -17,7 +18,7 @@ exports.subscribed = async (req, res) => {
       return res.status(409).json({ message: 'user already subscribed' });
     }
 
-    const topicExist = await topics.findOne({ _id: topicId, visibility: 'public' });
+    const topicExist = await topics.findOne({_id: topicId, visibility: 'public' });
     if (!topicExist) {
       return res.status(404).json({ message: "Topic not found " });
     }
@@ -35,10 +36,9 @@ exports.subscribed = async (req, res) => {
   }
 }
 
-exports.unsubscribe = async (req, res) => {
+export const unsubscribe = async (req, res) => {
   const { topicId } = req.params;
-  const userid = req.user.user._id;
-   console.log("hello  i am in  unsubscribe ")
+  const userid = req.user.user.uuid;
   if (!topicId) {
     return res.status(400).json({ message: 'Please provide topicId' });
   }
@@ -56,21 +56,22 @@ exports.unsubscribe = async (req, res) => {
   }
 };
 
-exports.getUserSubscriptions = async (req, res) => {
+export const getUserSubscriptions = async (req, res) => {
   try {
-    const userId = req.user.user._id;
+    const userId = req.user.user.uuid;
     const userSubscriptions = await subscription.find({ userId: userId }).populate('topicId');
-    console.log(userSubscriptions)
     return res.status(200).json({ message: "User subscription detail fetched sucessfully", userSubscriptions });
   } catch (error) {
     return res.status(500).json({ message: 'server error', error })
   }
 }   
 
-exports.getTotalSubscription = async (req, res) => {
-  const _id = req.user.user._id
+
+export const getTotalSubscription = async (req, res) => {
+  const _id = req.user.user.uuid
   try {
-    const data = await subscription.find({ userId: _id });
+    const data = await subscription.find().populate('topicId');
+     
     const subscribedlength = data.length;
     return res.status(200).json({ message: 'total subscrition fetched', count: subscribedlength })
   } catch (error) {

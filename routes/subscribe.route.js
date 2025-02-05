@@ -1,11 +1,11 @@
-const express=require('express');
+import express from 'express'
+import {subscribed,getTotalSubscription,getUserSubscriptions,unsubscribe} from'../controller/subscriptionController.js'
+import {authenticate} from '../middleware/Auth.js'
 const subscribedRouter= express.Router();
-const subcriptioncontroller= require('../controller/subscriptionController');
-const authenticate = require('../middleware/Auth');
 
-subscribedRouter.post('/subscribe/:topicId',authenticate,subcriptioncontroller.subscribed)
-subscribedRouter.get('/getTotalSubscription',authenticate,subcriptioncontroller.getTotalSubscription)
-subscribedRouter.delete('/unsubscribe/:topicId',authenticate,subcriptioncontroller.unsubscribe);
-subscribedRouter.get('/getUserSubscriptions',authenticate,subcriptioncontroller.getUserSubscriptions);
+subscribedRouter.post('/subscribe/:topicId',authenticate,subscribed)
+subscribedRouter.get('/getTotalSubscription',authenticate,getTotalSubscription)
+subscribedRouter.delete('/unsubscribe/:topicId',authenticate,unsubscribe);
+subscribedRouter.get('/getUserSubscriptions',authenticate,getUserSubscriptions);
 
-module.exports=subscribedRouter;
+export default subscribedRouter;

@@ -1,9 +1,9 @@
-const express=require('express');
+import express from 'express'
+import {createresource} from '../controller/resourceController.js'
+import { authenticate } from '../middleware/Auth.js';
+
 const resourceRouter= express.Router();
-const resourceController=require('../controller/resourceController');
-const authenticate = require('../middleware/Auth');
 
-resourceRouter.post('/createResource/:topicId',authenticate,resourceController.createresource);
+resourceRouter.post('/createResource/:topicId',authenticate,createresource);
 
-
-module.exports=resourceRouter;
+export default resourceRouter;
