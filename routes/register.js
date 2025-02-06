@@ -1,9 +1,13 @@
- const express=require('express');
-  const userRouter= express.Router();
- const userController=require('../controller/userController');
+import express from 'express';
+import { register, login, forgetPassword, resetPassword, changePassword } from '../controller/userController.js';
+import {authenticate} from '../middleware/Auth.js';
 
+const userRouter = express.Router();
 
- userRouter.post('/registeruser',userController.register);
- userRouter.post('/loginuser',userController.login);
+userRouter.post('/registeruser', register);
+userRouter.post('/loginuser', login);
+userRouter.post('/forgotpassword', forgetPassword);
+userRouter.post('/resetpassword/:token', resetPassword);
+userRouter.post('/changePassword', authenticate, changePassword);
 
-module.exports=userRouter;
+export default userRouter;

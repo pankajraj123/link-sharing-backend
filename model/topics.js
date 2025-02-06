@@ -1,27 +1,32 @@
-const mongoose = require('mongoose');
+import mongoose from  'mongoose';
 
 const topicSchema = new mongoose.Schema({
-    name: {
+    name:{
         type: String,
         required: true
     },
-    createdby: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Users'
+    uuid:{
+        type:String,
     },
-    dateCreated: {
+    createdby:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users'
+    },
+    dateCreated:{
         type: Date,
         default: Date.now
     },
-    lastUpdated: {
+    lastUpdated:{
         type: Date,
-        default: Date.now 
+        default: Date.now
     },
-    visibility: {
+    visibility:{
         type: String,
-        enum:['public', 'private'],
+        enum: ['public', 'private'],
     }
 });
 
+
 const topicModel = mongoose.model("topics", topicSchema);
- module.exports=topicModel;
+
+export default topicModel;

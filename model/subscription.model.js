@@ -1,18 +1,26 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const subscriptionSchema = new mongoose.Schema({
-    topic:{
-      type: mongoose.Schema.Types.ObjectId,
-      ref:'topics'
-    },
-    user:{
+    topicId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:'user'
+        ref: 'topics'
     },
-    isRead:{
-        type:Boolean
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users'
+    },
+    uuid:{
+        type:String,
+    },
+    seriousness: {
+        type: String,
+        enum: ["Casual", "Serious", "Very Serious"],
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
     }
 });
 
 const subscriptionModel = mongoose.model("subscription", subscriptionSchema);
-module.exports=subscriptionModel;
+export default  subscriptionModel;

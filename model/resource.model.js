@@ -1,16 +1,19 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const resourceSchema = new mongoose.Schema({
-    description:{
+    description: {
+        type: String,
+        required: true,
+    },
+    uuid:{
         type:String,
-        required:true
     },
     createdby: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users'
     },
-    topic:{
-     type: mongoose.Schema.Types.ObjectId,
+    topic: {
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'topics'
     },
     dateCreated: {
@@ -19,9 +22,10 @@ const resourceSchema = new mongoose.Schema({
     },
     lastUpdated: {
         type: Date,
-        default: Date.now 
+        default: Date.now
     }
 });
 
 const resourceModel = mongoose.model("resource", resourceSchema);
- module.exports=resourceModel;
+
+export default resourceModel
