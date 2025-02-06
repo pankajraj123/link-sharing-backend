@@ -52,6 +52,7 @@ export const getUserTopics = async (req, res) => {
 
     if (topiclist.length > 0) {
       topicsDetails = topiclist.map((topic) => ({
+        _id:topic._id,
         name: topic.name,
         visibility: topic.visibility,
         dateCreated: topic.dateCreated,
@@ -69,7 +70,7 @@ export const getUserTopics = async (req, res) => {
 };
 
 export const getpublictopic = async (req, res) => {
-  const userid = req.user.user.uuid;
+  const userid = req.user.user._id;
 
   try {
     let publictopic = [];
@@ -77,7 +78,6 @@ export const getpublictopic = async (req, res) => {
    let  publiclist = await topics
       .find({ visibility: "public" })
       .populate("createdby");
-      console.log(publiclist);
    
 
     if (publiclist.length > 0) {

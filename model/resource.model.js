@@ -12,7 +12,7 @@ const resourceSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users'
     },
-    topic: {
+    topicID:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'topics'
     },
