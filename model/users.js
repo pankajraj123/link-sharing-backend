@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 
-
 const UserSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -25,25 +24,25 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    photo: {
+    photo:{
         type: String
     },
-    admin: {
+    admin:{
         type: Boolean
     },
-    activate: {
+    activate:{
         type: Boolean
     },
-    datecreated: {
+    datecreated:{
         type: Date
     },
-    lastupdate: {
+    lastupdate:{
         type: Date
     },
-    resetPasswordToken: {
+    resetPasswordToken:{
         type: String
     },
-    resetPasswordExpires: {
+    resetPasswordExpires:{
         type: Date,
     },
 });

@@ -36,17 +36,18 @@ export const subscribed = async (req, res) => {
   }
 }
 
+
 export const unsubscribe = async (req, res) => {
   const { topicId } = req.params;
-  const userid = req.user.user.uuid;
+  const userid = req.user.user._id;
   if (!topicId) {
     return res.status(400).json({ message: 'Please provide topicId' });
   }
 
   try {
     const subscriptiondata = await subscription.findOne({ topicId: topicId, userId: userid });
-    if (!subscriptiondata) {
-      return res.status(404).json({ message: 'Subscription not found' });
+    if (!subscriptiondata){
+      return res.status(404).json({message: 'Subscription not found'});
     }
     await subscription.deleteOne({ topicId: topicId, userId: userid });
     return res.status(200).json({ message: 'Unsubscribed successfully' });
@@ -58,7 +59,7 @@ export const unsubscribe = async (req, res) => {
 
 export const getUserSubscriptions = async (req, res) => {
   try {
-    const userId = req.user.user.uuid;
+    const userId = req.user.user._id;
     const userSubscriptions = await subscription.find({ userId: userId }).populate('topicId');
     return res.status(200).json({ message: "User subscription detail fetched sucessfully", userSubscriptions });
   } catch (error) {
@@ -68,13 +69,12 @@ export const getUserSubscriptions = async (req, res) => {
 
 
 export const getTotalSubscription = async (req, res) => {
-  const _id = req.user.user.uuid
+  const id= req.user.user._id
   try {
-    const data = await subscription.find().populate('topicId');
-     
+    const data = await subscription.find({userId:id}).populate('topicId');
     const subscribedlength = data.length;
-    return res.status(200).json({ message: 'total subscrition fetched', count: subscribedlength })
-  } catch (error) {
+    return res.status(200).json({ message: 'total subscrition fetched',count: subscribedlength })
+  } catch (error){
     return res.status(500).json({ message: "interval server", error })
   }
 }

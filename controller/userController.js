@@ -71,7 +71,7 @@ export const login = async (req, res) => {
 
 export const changePassword = async (req, res) => {
   try {
-    const id = req.user.user._id;
+    const id = req.user.user.uuid;
 
     const { oldPassword, newPassword } = req.body;
 
@@ -79,7 +79,7 @@ export const changePassword = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const userdetail = await Users.findOne({ _id: id });
+    const userdetail = await Users.findOne({ uuid: id });
 
     if (!userdetail) {
       return res.status(404).json({ message: "user is not exist" });
@@ -93,7 +93,7 @@ export const changePassword = async (req, res) => {
     if (checkPassword) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await Users.findOneAndUpdate(
-        { _id: id },
+        {uuid: id },
         { $set: { password: hashedPassword } }
       );
       return res.status(201).json({ message: "password changed sucessfully" });

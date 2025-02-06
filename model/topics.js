@@ -1,14 +1,14 @@
 import mongoose from  'mongoose';
 
 const topicSchema = new mongoose.Schema({
-    name: {
+    name:{
         type: String,
         required: true
     },
     uuid:{
         type:String,
     },
-    createdby: {
+    createdby:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users'
     },
@@ -16,7 +16,7 @@ const topicSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    lastUpdated: {
+    lastUpdated:{
         type: Date,
         default: Date.now
     },
@@ -25,6 +25,7 @@ const topicSchema = new mongoose.Schema({
         enum: ['public', 'private'],
     }
 });
+
 
 const topicModel = mongoose.model("topics", topicSchema);
 

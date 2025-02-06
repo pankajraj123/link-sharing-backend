@@ -69,7 +69,7 @@ export const getUserTopics = async (req, res) => {
 };
 
 export const getpublictopic = async (req, res) => {
-  const userid = req.user.user._id;
+  const userid = req.user.user.uuid;
 
   try {
     let publictopic = [];
@@ -77,15 +77,19 @@ export const getpublictopic = async (req, res) => {
    let  publiclist = await topics
       .find({ visibility: "public" })
       .populate("createdby");
+      console.log(publiclist);
+   
 
     if (publiclist.length > 0) {
       publictopic = publiclist.map((topic) => ({
-        _id: topic._id,
+        _id:topic._id,
+        uuid:topic.uuid,
         name: topic.name,
         username: topic.createdby.username,
         visibility: topic.visibility,
         dateCreated: topic.dateCreated,
       }));
+    
 
       return res
         .status(200)
@@ -106,11 +110,11 @@ export const deleteTopic = async (req, res) => {
     return res.status(400).json({ message: "topicId is required" });
   }
   try{
-    const topicdata = await topics.findOne({ _id:topicId});
+    const topicdata = await topics.findOne({ uuid:topicId});
     if(!topicdata){
       return res.status(404).json({ message: "Topic not found" });
     }else {
-      await topics.deleteOne({_id: topicId });
+      await topics.deleteOne({uuid: topicId });
       await resource.deleteMany({ topic:topicId});
       return res
         .status(200)
@@ -135,14 +139,14 @@ export const editTopic = async (req, res) => {
   }
   try {
     
-    const topicdata = await topics.findOne({_id:topicId});
+    const topicdata = await topics.findOne({uuid:topicId});
 
     if (!topicdata) {
       return res.status(404).json({ message: "Topic not found" });
     }
 
     await topics.updateOne(
-      { _id: topicId },
+      { uuid: topicId },
       { $set: { name: name, visibility: visibility } }
     );
      return res.status(200).json({message:"Topic Updated Sucessfully"})
