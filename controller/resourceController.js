@@ -7,7 +7,6 @@ export const createresource = async (req, res) => {
         const id = req.user.user._id;
         const { description } = req.body;
         const { topicId } = req.params;
-
         if (!description || !topicId) {
             return res.status(400).json({ message: "Please fill all the fields" });
         }

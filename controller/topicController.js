@@ -25,7 +25,6 @@ export const createTopic = async (req, res) => {
       createdby:id,
     });
     await topicData.save();
-
     await subscription.create({
       uuid: uuidv4(),
       topicId: topicData._id,
@@ -71,7 +70,6 @@ export const getUserTopics = async (req, res) => {
 
 export const getpublictopic = async (req, res) => {
   const userid = req.user.user._id;
-
   try {
     let publictopic = [];
 
@@ -90,7 +88,6 @@ export const getpublictopic = async (req, res) => {
         dateCreated: topic.dateCreated,
       }));
     
-
       return res
         .status(200)
         .json({
@@ -110,11 +107,12 @@ export const deleteTopic = async (req, res) => {
     return res.status(400).json({ message: "topicId is required" });
   }
   try{
-    const topicdata = await topics.findOne({ uuid:topicId});
+    const topicdata = await topics.findOne({_id:topicId});
     if(!topicdata){
       return res.status(404).json({ message: "Topic not found" });
     }else {
-      await topics.deleteOne({uuid: topicId });
+      await topics.deleteOne({_id: topicId });
+      await subscription.deleteMany({topicId:topicId})
       await resource.deleteMany({ topic:topicId});
       return res
         .status(200)
@@ -122,31 +120,31 @@ export const deleteTopic = async (req, res) => {
           message: "Topic Delete Successfully And Resource Also deleted",
         });
     }
-  } catch (error) {
+  } catch (error){
+    console.log(error.message)
     return res
       .status(500)
       .json({ message: "Internal Server Error", error: error.message });
+      
   }
 };
 
 export const editTopic = async (req, res) => {
   const { name, visibility } = req.body;
   const {topicId} =req.params;
-  if (!name || !visibility || !topicId) {
+  if (!name || !visibility || !topicId){
     return res
       .status(400)
       .json({ message: "Topic name , visibility or  topicId is required" });
   }
   try {
-    
-    const topicdata = await topics.findOne({uuid:topicId});
-
+    const topicdata = await topics.findOne({_id:topicId});
     if (!topicdata) {
       return res.status(404).json({ message: "Topic not found" });
     }
 
     await topics.updateOne(
-      { uuid: topicId },
+      { _id: topicId },
       { $set: { name: name, visibility: visibility } }
     );
      return res.status(200).json({message:"Topic Updated Sucessfully"})
