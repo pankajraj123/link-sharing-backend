@@ -19,7 +19,7 @@ export const register = async (req, res) => {
   });
 
   if (valid) {
-    res.send("user is alerady exist");
+    res.send("user is already exist");
     return;
   }
 
@@ -57,6 +57,7 @@ export const login = async (req, res) => {
     });
     if (loged) {
       res.send({
+        userId:user._id,
         username: user.username,
         token: token,
         message: "user login sucessfully",
@@ -93,7 +94,7 @@ export const changePassword = async (req, res) => {
     if (checkPassword) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await Users.findOneAndUpdate(
-        {uuid: id },
+        { uuid: id },
         { $set: { password: hashedPassword } }
       );
       return res.status(201).json({ message: "password changed sucessfully" });
@@ -108,6 +109,7 @@ export const changePassword = async (req, res) => {
 
 export const forgetPassword = async (req, res) => {
   const { email } = req.body;
+  console.log(email);
   if (!email) {
     return res.status(400).json({ message: "Email is required" });
   }
@@ -138,14 +140,13 @@ export const forgetPassword = async (req, res) => {
       pass: process.env.MY_GMAIL_PASSWORD,
     },
   });
-
-
-  transporter.sendMail(mailOptions, (err, response) => {
-    if (err) {
-      console.log(err);
+  console.log(transporter);
+  transporter.sendMail(mailOptions, (err, res) => {
+   console.log(err)
+    if (err){
       return res.status(500).send("Error sending email");
     }
-    res.status(200).send("Password reset email sent");
+  return res.status(200).send("Password reset email sent");
   });
 };
 

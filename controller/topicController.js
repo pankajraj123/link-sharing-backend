@@ -8,7 +8,6 @@ export const createTopic = async (req, res) => {
     const { name, visibility } = req.body;
     const id = req.user.user._id;
 
-
     if (!name || !visibility) {
       return res.status(400).json({ message: "All Fields are Required" });
     }
@@ -22,7 +21,7 @@ export const createTopic = async (req, res) => {
       name: name,
       uuid: uuidv4(),
       visibility: visibility,
-      createdby:id,
+      createdby: id,
     });
     await topicData.save();
     await subscription.create({
@@ -51,7 +50,7 @@ export const getUserTopics = async (req, res) => {
 
     if (topiclist.length > 0) {
       topicsDetails = topiclist.map((topic) => ({
-        _id:topic._id,
+        _id: topic._id,
         name: topic.name,
         visibility: topic.visibility,
         dateCreated: topic.dateCreated,
@@ -73,27 +72,24 @@ export const getpublictopic = async (req, res) => {
   try {
     let publictopic = [];
 
-   let  publiclist = await topics
+    let publiclist = await topics
       .find({ visibility: "public" })
       .populate("createdby");
-   
 
     if (publiclist.length > 0) {
       publictopic = publiclist.map((topic) => ({
-        _id:topic._id,
-        uuid:topic.uuid,
+        _id: topic._id,
+        uuid: topic.uuid,
         name: topic.name,
         username: topic.createdby.username,
         visibility: topic.visibility,
         dateCreated: topic.dateCreated,
       }));
-    
-      return res
-        .status(200)
-        .json({
-          message: "Public topics fetched successfully",
-          topic: publictopic,
-        });
+
+      return res.status(200).json({
+        message: "Public topics fetched successfully",
+        topic: publictopic,
+      });
     }
   } catch (error) {
     console.log(error);
@@ -102,43 +98,40 @@ export const getpublictopic = async (req, res) => {
 };
 
 export const deleteTopic = async (req, res) => {
-  const {topicId} = req.params
+  const { topicId } = req.params;
   if (!topicId) {
     return res.status(400).json({ message: "topicId is required" });
   }
-  try{
-    const topicdata = await topics.findOne({_id:topicId});
-    if(!topicdata){
+  try {
+    const topicdata = await topics.findOne({ _id: topicId });
+    if (!topicdata) {
       return res.status(404).json({ message: "Topic not found" });
-    }else {
-      await topics.deleteOne({_id: topicId });
-      await subscription.deleteMany({topicId:topicId})
-      await resource.deleteMany({ topic:topicId});
-      return res
-        .status(200)
-        .json({
-          message: "Topic Delete Successfully And Resource Also deleted",
-        });
+    } else {
+      await topics.deleteOne({ _id: topicId });
+      await subscription.deleteMany({ topicId: topicId });
+      await resource.deleteMany({ topic: topicId });
+      return res.status(200).json({
+        message: "Topic Delete Successfully And Resource Also deleted",
+      });
     }
-  } catch (error){
-    console.log(error.message)
+  } catch (error) {
+    console.log(error.message);
     return res
       .status(500)
       .json({ message: "Internal Server Error", error: error.message });
-      
   }
 };
 
 export const editTopic = async (req, res) => {
   const { name, visibility } = req.body;
-  const {topicId} =req.params;
-  if (!name || !visibility || !topicId){
+  const { topicId } = req.params;
+  if (!name || !visibility || !topicId) {
     return res
       .status(400)
       .json({ message: "Topic name , visibility or  topicId is required" });
   }
   try {
-    const topicdata = await topics.findOne({_id:topicId});
+    const topicdata = await topics.findOne({ _id: topicId });
     if (!topicdata) {
       return res.status(404).json({ message: "Topic not found" });
     }
@@ -147,9 +140,9 @@ export const editTopic = async (req, res) => {
       { _id: topicId },
       { $set: { name: name, visibility: visibility } }
     );
-     return res.status(200).json({message:"Topic Updated Sucessfully"})
+    return res.status(200).json({ message: "Topic Updated Sucessfully" });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.status(500).json({ message: "Internal Server Error", error });
   }
 };
