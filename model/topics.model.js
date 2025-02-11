@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
-const resourceSchema = new mongoose.Schema({
-  description: {
+const topicSchema = new mongoose.Schema({
+  name: {
     type: String,
     required: true,
   },
@@ -12,10 +12,6 @@ const resourceSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
   },
-  topicId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "topics",
-  },
   dateCreated: {
     type: Date,
     default: Date.now,
@@ -24,8 +20,12 @@ const resourceSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  visibility: {
+    type: String,
+    enum: ["public", "private"],
+  },
 });
 
-const resourceModel = mongoose.model("resource", resourceSchema);
+const topicModel = mongoose.model("topics", topicSchema);
 
-export default resourceModel;
+export default topicModel;

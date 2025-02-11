@@ -1,5 +1,5 @@
 import express from 'express'
-import {subscribed,getTotalSubscription,getUserSubscriptions,unsubscribe} from'../controller/subscriptionController.js'
+import {subscribed,getTotalSubscription,getUserSubscriptions,unsubscribe} from'../controller/subscription.controller.js'
 import {authenticate} from '../middleware/Auth.js'
 const subscribedRouter= express.Router();
 
