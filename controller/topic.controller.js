@@ -1,5 +1,5 @@
 import resource from "../model/resource.model.js";
-import topics from "../model/topics.js";
+import topics from "../model/topics.model.js";
 import subscription from "../model/subscription.model.js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -7,16 +7,13 @@ export const createTopic = async (req, res) => {
   try {
     const { name, visibility } = req.body;
     const id = req.user.user._id;
-
     if (!name || !visibility) {
       return res.status(400).json({ message: "All Fields are Required" });
     }
     const isExist = await topics.findOne({ name });
-
     if (isExist) {
       return res.status(409).json({ message: "Topic Already Exists" });
     }
-
     let topicData = new topics({
       name: name,
       uuid: uuidv4(),
@@ -45,9 +42,7 @@ export const getUserTopics = async (req, res) => {
   const userid = req.user.user._id;
   try {
     const topiclist = await topics.find({ createdby: userid });
-
     let topicsDetails = [];
-
     if (topiclist.length > 0) {
       topicsDetails = topiclist.map((topic) => ({
         _id: topic._id,
@@ -71,11 +66,9 @@ export const getpublictopic = async (req, res) => {
   const userid = req.user.user._id;
   try {
     let publictopic = [];
-
     let publiclist = await topics
       .find({ visibility: "public" })
       .populate("createdby");
-
     if (publiclist.length > 0) {
       publictopic = publiclist.map((topic) => ({
         _id: topic._id,
@@ -85,7 +78,6 @@ export const getpublictopic = async (req, res) => {
         visibility: topic.visibility,
         dateCreated: topic.dateCreated,
       }));
-
       return res.status(200).json({
         message: "Public topics fetched successfully",
         topic: publictopic,
@@ -135,7 +127,6 @@ export const editTopic = async (req, res) => {
     if (!topicdata) {
       return res.status(404).json({ message: "Topic not found" });
     }
-
     await topics.updateOne(
       { _id: topicId },
       { $set: { name: name, visibility: visibility } }

@@ -5,7 +5,7 @@ import {
   getpublictopic,
   deleteTopic,
   editTopic,
-} from "../controller/topicController.js";
+} from "../controller/topic.controller.js";
 import { authenticate } from "../middleware/Auth.js";
 const topicRouter = express.Router();
 

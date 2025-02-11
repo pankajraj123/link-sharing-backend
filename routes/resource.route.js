@@ -2,7 +2,7 @@ import express from "express";
 import {
   createresource,
   topicDescription,
-} from "../controller/resourceController.js";
+} from "../controller/resource.controller.js";
 import { authenticate } from "../middleware/Auth.js";
 
 const resourceRouter = express.Router();

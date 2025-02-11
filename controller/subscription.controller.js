@@ -1,4 +1,4 @@
-import topics from "../model/topics.js";
+import topics from "../model/topics.model.js";
 import subscription from "../model/subscription.model.js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -6,13 +6,11 @@ export const subscribed = async (req, res) => {
   const { seriousness } = req.body;
   const { topicId } = req.params;
   const userid = req.user.user._id;
-
   if (!seriousness || !topicId) {
     return res
       .status(400)
       .json({ message: "Please provide seriousness and topicId" });
   }
-
   try {
     const issubscribed = await subscription.findOne({
       topicId: topicId,
@@ -21,7 +19,6 @@ export const subscribed = async (req, res) => {
     if (issubscribed) {
       return res.status(409).json({ message: "user already subscribed" });
     }
-
     const topicExist = await topics.findOne({
       _id: topicId,
       visibility: "public",
@@ -51,7 +48,6 @@ export const unsubscribe = async (req, res) => {
   if (!topicId) {
     return res.status(400).json({ message: "Please provide topicId" });
   }
-
   try {
     const subscriptiondata = await subscription.findOne({
       topicId: topicId,
