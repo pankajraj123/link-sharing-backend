@@ -1,30 +1,30 @@
 import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
-  email: {
+  email:{
     type: String,
     required: true,
   },
-  uuid: {
+  uuid:{
     type: String,
   },
-  username: {
-    type: String,
-    required: true,
-  },
-  password: {
+  username:{
     type: String,
     required: true,
   },
-  firstname: {
+  password:{
     type: String,
     required: true,
   },
-  lastname: {
+  firstName:{
     type: String,
     required: true,
   },
-  photo: {
+  lastName:{
+    type: String,
+    required: true,
+  },
+  photo:{
     type: String,
   },
   admin: {

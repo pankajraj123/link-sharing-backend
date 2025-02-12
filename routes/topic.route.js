@@ -2,17 +2,17 @@ import express from "express";
 import {
   createTopic,
   getUserTopics,
-  getpublictopic,
+  getPublicTopic,
   deleteTopic,
   editTopic,
 } from "../controller/topic.controller.js";
 import { authenticate } from "../middleware/Auth.js";
 const topicRouter = express.Router();
 
-topicRouter.post("/topiccreate", authenticate, createTopic);
-topicRouter.get("/getUserTopic", authenticate, getUserTopics);
-topicRouter.delete("/deleteTopic/:topicId", authenticate, deleteTopic);
-topicRouter.put("/editTopic/:topicId", authenticate, editTopic);
-topicRouter.get("/getPublicTopic", authenticate, getpublictopic);
+topicRouter.post("/topic-create", authenticate, createTopic);
+topicRouter.get("/get-user-topic", authenticate, getUserTopics);
+topicRouter.delete("/delete-topic/:topicId", authenticate, deleteTopic);
+topicRouter.put("/edit-topic/:topicId", authenticate, editTopic);
+topicRouter.get("/get-public-topic", authenticate, getPublicTopic);
 
 export default topicRouter;

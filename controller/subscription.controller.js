@@ -85,10 +85,10 @@ export const getTotalSubscription = async (req, res) => {
   const id = req.user.user._id;
   try {
     const data = await subscription.find({ userId: id }).populate("topicId");
-    const subscribedlength = data.length;
+    const subscribeLength = data.length;
     return res
       .status(200)
-      .json({ message: "total subscrition fetched", count: subscribedlength });
+      .json({ message: "total Subscription fetched", count: subscribeLength });
   } catch (error) {
     return res.status(500).json({ message: "interval server", error });
   }

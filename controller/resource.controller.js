@@ -2,7 +2,7 @@ import resource from "../model/resource.model.js";
 import topics from "../model/topics.model.js";
 import { v4 as uuidv4 } from "uuid";
 
-export const createresource = async (req, res) => {
+export const createResource = async (req, res) => {
   try {
     const id = req.user.user._id;
     const { description } = req.body;

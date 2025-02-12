@@ -62,7 +62,7 @@ export const getUserTopics = async (req, res) => {
   }
 };
 
-export const getpublictopic = async (req, res) => {
+export const getPublicTopic = async (req, res) => {
   const userid = req.user.user._id;
   try {
     let publictopic = [];
@@ -90,6 +90,7 @@ export const getpublictopic = async (req, res) => {
 };
 
 export const deleteTopic = async (req, res) => {
+  console.log(req.body);
   const { topicId } = req.params;
   if (!topicId) {
     return res.status(400).json({ message: "topicId is required" });
@@ -121,6 +122,9 @@ export const editTopic = async (req, res) => {
     return res
       .status(400)
       .json({ message: "Topic name , visibility or  topicId is required" });
+  }
+  if(await topics.findOne({name:name})){
+   return res.status(409).json({success:false,message:"Topic name Exist Try Another Name"})
   }
   try {
     const topicdata = await topics.findOne({ _id: topicId });

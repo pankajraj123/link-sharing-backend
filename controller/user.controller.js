@@ -6,31 +6,37 @@ import nodemailer from "nodemailer";
 import crypto from "crypto";
 import { v4 as uuidv4 } from "uuid";
 dotenv.config();
+import {transporter} from '../util/nodemailer.js'
 
 export const register = async (req, res) => {
-  let { email, username, password, firstname, lastname } = req.body;
-  if (!username || !email || !password || !firstname || !lastname) {
-    res.send("all fields are required");
+  let { email, username, password, firstName, lastName } = req.body;
+  if (!username || !email || !password || !firstName || !lastName) {
+    res.status(404).json({ success:false,message:"all fields are required"});
   }
-  const valid = await Users.findOne({
-    $or: [{ email }, { username }],
-  });
-  if (valid) {
-    res.send("user is already exist");
-    return;
-  }
-  const hashpassword = await bcrypt.hash(password, 10);
-  password = hashpassword;
-  const data = new Users({
-    uuid: uuidv4(),
-    email,
-    username,
-    password,
-    firstname,
-    lastname,
-  });
-  await data.save();
-  res.send("user created sucessfully");
+ try{
+ const valid = await Users.findOne({
+   $or: [{ email }, { username }],
+ });
+ if (valid) {
+   res.status(409).json({ success:false,message:"user is already exist"});
+   return;
+ }
+
+ const hashPassword = await bcrypt.hash(password, 10);
+ password = hashPassword;
+ const data = new Users({
+   uuid: uuidv4(),
+   email,
+   username,
+   password,
+   firstName,
+   lastName,
+ });
+ await data.save();
+ res.status(200).json({ success: true, message: "user created successfully" });
+ }catch(error){
+  res.status(500).json({success:false,message:"user is not register"})
+ }
 };
 
 export const login = async (req, res) => {
@@ -48,17 +54,17 @@ export const login = async (req, res) => {
       expiresIn: "1h",
     });
     if (loged) {
-      res.send({
+      res.status(200).json({ success:true,
         userId:user._id,
         username: user.username,
         token: token,
-        message: "user login sucessfully",
+        message: "user login successfully",
       });
     } else {
-      res.send("login failed");
+      res.status(401).json({success:false,message:"Enter correct Password"})
     }
   } catch (error) {
-    res.send(error);
+    res.status(500).json({message:"Internal server error"})
   }
 };
 
@@ -94,6 +100,7 @@ export const changePassword = async (req, res) => {
 };
 
 export const forgetPassword = async (req, res) => {
+  console.log('hello i  am in forgot ')
   const { email } = req.body;
   if (!email) {
     return res.status(400).json({ message: "Email is required" });
@@ -113,16 +120,7 @@ export const forgetPassword = async (req, res) => {
     subject: "Password Reset Request",
     text: `Please click the link to reset your password: ${resetUrl}`,
   };
-  
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    secure: true,
-    auth: {
-      user: process.env.MY_GMAIL,
-      pass: process.env.MY_GMAIL_PASSWORD,
-    },
-  });
-  transporter.sendMail(mailOptions, (err, res) => {
+  transporter.sendMail(mailOptions, (err, response) => {
     if (err){
       return res.status(500).send("Error sending email");
     }else{
