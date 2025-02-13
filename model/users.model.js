@@ -8,7 +8,7 @@ const UserSchema = new mongoose.Schema({
   uuid:{
     type: String,
   },
-  username:{
+  userName:{
     type: String,
     required: true,
   },
@@ -33,10 +33,10 @@ const UserSchema = new mongoose.Schema({
   activate: {
     type: Boolean,
   },
-  datecreated: {
+  dateCreate: {
     type: Date,
   },
-  lastupdate: {
+  lastUpdate: {
     type: Date,
   },
   resetPasswordToken: {

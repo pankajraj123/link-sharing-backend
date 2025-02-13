@@ -8,7 +8,7 @@ const readingSchema = new mongoose.Schema({
     uuid:{
         type:String,
     },
-    user: {
+    user:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'
     },

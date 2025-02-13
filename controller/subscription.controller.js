@@ -5,18 +5,18 @@ import { v4 as uuidv4 } from "uuid";
 export const subscribed = async (req, res) => {
   const { seriousness } = req.body;
   const { topicId } = req.params;
-  const userid = req.user.user._id;
-  if (!seriousness || !topicId) {
-    return res
+  const userId = req.user.user._id;
+  if (!seriousness || !topicId){
+      return res
       .status(400)
       .json({ message: "Please provide seriousness and topicId" });
   }
   try {
-    const issubscribed = await subscription.findOne({
+    const isSubscribed = await subscription.findOne({
       topicId: topicId,
-      userId: userid,
+      userId: userId,
     });
-    if (issubscribed) {
+    if (isSubscribed) {
       return res.status(409).json({ message: "user already subscribed" });
     }
     const topicExist = await topics.findOne({
@@ -29,7 +29,7 @@ export const subscribed = async (req, res) => {
     await subscription.create({
       uuid: uuidv4(),
       topicId: topicId,
-      userId: userid,
+      userId: userId,
       seriousness: seriousness,
       createdAt: Date.now(),
     });
@@ -44,19 +44,19 @@ export const subscribed = async (req, res) => {
 
 export const unsubscribe = async (req, res) => {
   const { topicId } = req.params;
-  const userid = req.user.user._id;
+  const userId = req.user.user._id;
   if (!topicId) {
     return res.status(400).json({ message: "Please provide topicId" });
   }
   try {
-    const subscriptiondata = await subscription.findOne({
+    const subscriptionData = await subscription.findOne({
       topicId: topicId,
-      userId: userid,
+      userId: userId,
     });
-    if (!subscriptiondata) {
+    if (!subscriptionData) {
       return res.status(404).json({ message: "Subscription not found" });
     }
-    await subscription.deleteOne({ topicId: topicId, userId: userid });
+    await subscription.deleteOne({ topicId: topicId, userId: userId });
     return res.status(200).json({ message: "Unsubscribed successfully" });
   } catch (error) {
     console.log(error);
@@ -69,11 +69,16 @@ export const getUserSubscriptions = async (req, res) => {
     const userId = req.user.user._id;
     const userSubscriptions = await subscription
       .find({ userId: userId })
-      .populate("topicId");
+      .populate({
+        path: "topicId",
+        populate: {
+          path: "createdBy",
+        },
+      });
     return res
       .status(200)
       .json({
-        message: "User subscription detail fetched sucessfully",
+        message: "User subscription detail fetched successfully",
         userSubscriptions,
       });
   } catch (error) {

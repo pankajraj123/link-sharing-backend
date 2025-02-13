@@ -9,13 +9,13 @@ dotenv.config();
 import {transporter} from '../util/nodemailer.js'
 
 export const register = async (req, res) => {
-  let { email, username, password, firstName, lastName } = req.body;
-  if (!username || !email || !password || !firstName || !lastName) {
+  let { email, userName, password, firstName, lastName } = req.body;
+  if (!userName || !email || !password || !firstName || !lastName) {
     res.status(404).json({ success:false,message:"all fields are required"});
   }
  try{
  const valid = await Users.findOne({
-   $or: [{ email }, { username }],
+   $or: [{ email }, { userName }],
  });
  if (valid) {
    res.status(409).json({ success:false,message:"user is already exist"});
@@ -27,7 +27,7 @@ export const register = async (req, res) => {
  const data = new Users({
    uuid: uuidv4(),
    email,
-   username,
+   userName,
    password,
    firstName,
    lastName,
@@ -49,14 +49,14 @@ export const login = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "user is not exist" });
     }
-    const loged = await bcrypt.compare(password, user.password);
+    const isLogIn = await bcrypt.compare(password, user.password);
     const token = jwt.sign({ user }, process.env.SECRET_KEY, {
       expiresIn: "1h",
     });
-    if (loged) {
+    if(isLogIn){
       res.status(200).json({ success:true,
         userId:user._id,
-        username: user.username,
+        userName: user.userName,
         token: token,
         message: "user login successfully",
       });
@@ -75,13 +75,13 @@ export const changePassword = async (req, res) => {
     if (!oldPassword || newPassword) {
       return res.status(400).json({ message: "All fields are required" });
     }
-    const userdetail = await Users.findOne({ uuid: id });
-    if (!userdetail) {
+    const userDetail = await Users.findOne({ uuid: id });
+    if (!userDetail) {
       return res.status(404).json({ message: "user is not exist" });
     }
     const checkPassword = await bcrypt.compare(
       oldPassword,
-      userdetail.password
+      userDetail.password
     );
     if (checkPassword) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -89,7 +89,7 @@ export const changePassword = async (req, res) => {
         { uuid: id },
         { $set: { password: hashedPassword } }
       );
-      return res.status(201).json({ message: "password changed sucessfully" });
+      return res.status(201).json({ message: "password changed successfully" });
     } else {
       return res.status(401).json({ message: "Old Password is incorrect" });
     }
@@ -100,7 +100,6 @@ export const changePassword = async (req, res) => {
 };
 
 export const forgetPassword = async (req, res) => {
-  console.log('hello i  am in forgot ')
   const { email } = req.body;
   if (!email) {
     return res.status(400).json({ message: "Email is required" });
@@ -147,8 +146,8 @@ export const resetPassword = async (req, res) => {
       .status(400)
       .send("Password reset token is invalid or has expired");
   }
-  const hashpassword = await bcrypt.hash(newPassword, 10);
-  user.password = hashpassword;
+  const hashPassword = await bcrypt.hash(newPassword, 10);
+  user.password = hashPassword;
   user.resetPasswordToken = undefined;
   user.resetPasswordExpires = undefined;
   await user.save();
