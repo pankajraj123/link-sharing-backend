@@ -18,7 +18,7 @@ export const createTopic = async (req, res) => {
       name: name,
       uuid: uuidv4(),
       visibility: visibility,
-      createdby: id,
+      createdBy: id,
     });
     await topicData.save();
     await subscription.create({
@@ -41,10 +41,10 @@ export const createTopic = async (req, res) => {
 export const getUserTopics = async (req, res) => {
   const userid = req.user.user._id;
   try {
-    const topiclist = await topics.find({ createdby: userid });
+    const topicList = await topics.find({ createdBy: userid });
     let topicsDetails = [];
-    if (topiclist.length > 0) {
-      topicsDetails = topiclist.map((topic) => ({
+    if (topicList.length > 0) {
+      topicsDetails = topicList.map((topic) => ({
         _id: topic._id,
         name: topic.name,
         visibility: topic.visibility,
@@ -52,7 +52,7 @@ export const getUserTopics = async (req, res) => {
       }));
     }
     return res.status(200).json({
-      totalTopic: topiclist.length,
+      totalTopic: topicList.length,
       topic: topicsDetails,
       message: "Topics fetched successfully",
     });
@@ -62,25 +62,24 @@ export const getUserTopics = async (req, res) => {
   }
 };
 
-export const getpublictopic = async (req, res) => {
+export const getPublicTopic = async (req, res) => {
   const userid = req.user.user._id;
   try {
-    let publictopic = [];
-    let publiclist = await topics
+    const publicList = await topics
       .find({ visibility: "public" })
-      .populate("createdby");
-    if (publiclist.length > 0) {
-      publictopic = publiclist.map((topic) => ({
+      .populate("createdBy");
+    if (publicList.length > 0) {
+      const publicTopic = publicList.map((topic) => ({
         _id: topic._id,
         uuid: topic.uuid,
         name: topic.name,
-        username: topic.createdby.username,
+        userName: topic.createdBy.userName,
         visibility: topic.visibility,
         dateCreated: topic.dateCreated,
       }));
       return res.status(200).json({
         message: "Public topics fetched successfully",
-        topic: publictopic,
+        topic: publicTopic,
       });
     }
   } catch (error) {
@@ -95,8 +94,8 @@ export const deleteTopic = async (req, res) => {
     return res.status(400).json({ message: "topicId is required" });
   }
   try {
-    const topicdata = await topics.findOne({ _id: topicId });
-    if (!topicdata) {
+    const topicData = await topics.findOne({ _id: topicId });
+    if (!topicData) {
       return res.status(404).json({ message: "Topic not found" });
     } else {
       await topics.deleteOne({ _id: topicId });
@@ -122,16 +121,21 @@ export const editTopic = async (req, res) => {
       .status(400)
       .json({ message: "Topic name , visibility or  topicId is required" });
   }
+  if (await topics.findOne({ name: name })) {
+    return res
+      .status(409)
+      .json({ success: false, message: "Topic name Exist Try Another Name" });
+  }
   try {
-    const topicdata = await topics.findOne({ _id: topicId });
-    if (!topicdata) {
+    const topicData = await topics.findOne({ _id: topicId });
+    if (!topicData) {
       return res.status(404).json({ message: "Topic not found" });
     }
     await topics.updateOne(
       { _id: topicId },
       { $set: { name: name, visibility: visibility } }
     );
-    return res.status(200).json({ message: "Topic Updated Sucessfully" });
+    return res.status(200).json({ message: "Topic Updated Successfully" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Internal Server Error", error });

@@ -1,13 +1,13 @@
 import express from "express";
 import {
-  createresource,
+  createResource,
   topicDescription,
 } from "../controller/resource.controller.js";
 import { authenticate } from "../middleware/Auth.js";
 
 const resourceRouter = express.Router();
 
-resourceRouter.post("/createResource/:topicId", authenticate, createresource);
-resourceRouter.get("/getDiscription/:topicId", authenticate, topicDescription);
+resourceRouter.post("/create-resource/:topicId", authenticate, createResource);
+resourceRouter.get("/get-description/:topicId", authenticate, topicDescription);
 
 export default resourceRouter;

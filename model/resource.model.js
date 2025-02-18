@@ -8,7 +8,7 @@ const resourceSchema = new mongoose.Schema({
   uuid: {
     type: String,
   },
-  createdby: {
+  createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
   },

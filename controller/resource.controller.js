@@ -2,7 +2,7 @@ import resource from "../model/resource.model.js";
 import topics from "../model/topics.model.js";
 import { v4 as uuidv4 } from "uuid";
 
-export const createresource = async (req, res) => {
+export const createResource = async (req, res) => {
   try {
     const id = req.user.user._id;
     const { description } = req.body;
@@ -10,27 +10,24 @@ export const createresource = async (req, res) => {
     if (!description || !topicId) {
       return res.status(400).json({ message: "Please fill all the fields" });
     }
-    console.log(topicId);
-    const topicdata = await topics.findById(topicId);
-    if (!topicdata) {
+    const topicData = await topics.findById(topicId);
+    if (!topicData) {
       return res.status(404).json({ message: "Topic not found" });
     }
-    const resourcedata = new resource({
+    const resourceData = new resource({
       uuid: uuidv4(),
       description: description,
-      topicId:topicId,
-      createdby: id,
+      topicId: topicId,
+      createdBy: id,
       dateCreated: Date.now(),
       lastUpdated: Date.now(),
     });
 
-    await resourcedata.save();
-    return res
-      .status(200)
-      .json({
-        resourceData: resourcedata,
-        message: "resource created successfully",
-      });
+    await resourceData.save();
+    return res.status(200).json({
+      resourceData: resourceData,
+      message: "resource created successfully",
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "internal server error" });
@@ -46,7 +43,7 @@ export const topicDescription = async (req, res) => {
     const topicResources = await resource
       .find({ topicId: topicId })
       .populate("topicId")
-      .populate("createdby");
+      .populate("createdBy");
     if (!topicResources) {
       return res.status(400).json({ message: "resource is not find" });
     }
@@ -54,13 +51,13 @@ export const topicDescription = async (req, res) => {
 
     if (topicResources.length > 0) {
       topicData = topicResources.map((data) => ({
-        createdby: data.createdby.username, // Extracting the username of the creator
+        createdBy: data.createdBy.username, // Extracting the username of the creator
         description: data.description,
         name: data.topicId.name,
         date: data.dateCreated, // Extracting the description
       }));
     }
-    
+
     return res.status(200).json({ topicData });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });

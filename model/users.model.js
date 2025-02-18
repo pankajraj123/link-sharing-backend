@@ -1,30 +1,30 @@
 import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
-  email: {
+  email:{
     type: String,
     required: true,
   },
-  uuid: {
+  uuid:{
     type: String,
   },
-  username: {
-    type: String,
-    required: true,
-  },
-  password: {
+  userName:{
     type: String,
     required: true,
   },
-  firstname: {
+  password:{
     type: String,
     required: true,
   },
-  lastname: {
+  firstName:{
     type: String,
     required: true,
   },
-  photo: {
+  lastName:{
+    type: String,
+    required: true,
+  },
+  photo:{
     type: String,
   },
   admin: {
@@ -33,10 +33,10 @@ const UserSchema = new mongoose.Schema({
   activate: {
     type: Boolean,
   },
-  datecreated: {
+  dateCreate: {
     type: Date,
   },
-  lastupdate: {
+  lastUpdate: {
     type: Date,
   },
   resetPasswordToken: {
