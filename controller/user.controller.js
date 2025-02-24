@@ -7,18 +7,21 @@ import crypto from "crypto";
 import { v4 as uuidv4 } from "uuid";
 dotenv.config();
 import {transporter} from '../util/nodemailer.js'
+import {REGISTER_FAILURE,REGISTER_INVALID_CREDENTIAL,REGISTER_MISSING_FIELDS,REGISTER_SUCCESS,REGISTER_CONFLICT} from '../constant/user.constant.js'
+import { LOGIN_FAILURE,LOGIN_INVALID_CREDENTIAL,LOGIN_SUCCESS,LOGIN_USER_NOT_EXIST,LOGIN_MISSING_FIELDS } from "../constant/user.constant.js";
+
 
 export const register = async (req, res) => {
   let { email, userName, password, firstName, lastName } = req.body;
   if (!userName || !email || !password || !firstName || !lastName) {
-    res.status(404).json({ success:false,message:"all fields are required"});
+    res.status(404).json({ success:false,message:REGISTER_MISSING_FIELDS});
   }
  try{
  const valid = await Users.findOne({
    $or: [{ email }, { userName }],
  });
  if (valid) {
-   res.status(409).json({ success:false,message:"user is already exist"});
+   res.status(409).json({ success: false, message: REGISTER_CONFLICT});
    return;
  }
 
@@ -33,9 +36,9 @@ export const register = async (req, res) => {
    lastName,
  });
  await data.save();
- res.status(200).json({ success: true, message: "user created successfully" });
+ res.status(200).json({ success: true, message:REGISTER_SUCCESS});
  }catch(error){
-  res.status(500).json({success:false,message:"user is not register"})
+  res.status(500).json({ success: false, message: REGISTER_FAILURE});
  }
 };
 
@@ -43,11 +46,11 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({ message:REGISTER_MISSING_FIELDS});
     }
     const user = await Users.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "user is not exist" });
+      return res.status(404).json({ message:LOGIN_USER_NOT_EXIST});
     }
     const isLogIn = await bcrypt.compare(password, user.password);
     const token = jwt.sign({ user }, process.env.SECRET_KEY, {
@@ -58,13 +61,13 @@ export const login = async (req, res) => {
         userId:user._id,
         userName: user.userName,
         token: token,
-        message: "user login successfully",
+        message:LOGIN_SUCCESS,
       });
     } else {
-      res.status(401).json({success:false,message:"Enter correct Password"})
+      res.status(401).json({success:false,message:LOGIN_INVALID_CREDENTIAL})
     }
   } catch (error) {
-    res.status(500).json({message:"Internal server error"})
+    res.status(500).json({message:LOGIN_FAILURE})
   }
 };
 
@@ -119,7 +122,7 @@ export const forgetPassword = async (req, res) => {
     subject: "Password Reset Request",
     text: `Please click the link to reset your password: ${resetUrl}`,
   };
-  transporter.sendMail(mailOptions, (err, response) => {
+  transporter.sendMail(mailOptions,(err, response)=>{
     if (err){
       return res.status(500).send("Error sending email");
     }else{

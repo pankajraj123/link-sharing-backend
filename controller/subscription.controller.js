@@ -16,7 +16,7 @@ export const subscribed = async (req, res) => {
       topicId: topicId,
       userId: userId,
     });
-    if (isSubscribed) {
+    if (isSubscribed){
       return res.status(409).json({ message: "user already subscribed" });
     }
     const topicExist = await topics.findOne({
@@ -24,7 +24,7 @@ export const subscribed = async (req, res) => {
       visibility: "public",
     });
     if (!topicExist) {
-      return res.status(404).json({ message: "Topic not found " });
+      return res.status(404).json({message: "Topic not found " });
     }
     await subscription.create({
       uuid: uuidv4(),
@@ -36,24 +36,24 @@ export const subscribed = async (req, res) => {
     return res
       .status(200)
       .json({ message: "subscribed successfully", seriousness: seriousness });
-  } catch (error) {
+  } catch (error){
     console.log(error);
-    return res.status(500).json({ message: "internal server", error });
+    return res.status(500).json({message:"internal server", error });
   }
 };
 
 export const unsubscribe = async (req, res) => {
   const { topicId } = req.params;
   const userId = req.user.user._id;
-  if (!topicId) {
+  if (!topicId){
     return res.status(400).json({ message: "Please provide topicId" });
   }
   try {
-    const subscriptionData = await subscription.findOne({
+    const subscriptionData =await subscription.findOne({
       topicId: topicId,
       userId: userId,
     });
-    if (!subscriptionData) {
+    if (!subscriptionData){
       return res.status(404).json({ message: "Subscription not found" });
     }
     await subscription.deleteOne({ topicId: topicId, userId: userId });
@@ -71,7 +71,7 @@ export const getUserSubscriptions = async (req, res) => {
       .find({ userId: userId })
       .populate({
         path: "topicId",
-        populate: {
+        populate:{
           path: "createdBy",
         },
       });
@@ -81,20 +81,20 @@ export const getUserSubscriptions = async (req, res) => {
         message: "User subscription detail fetched successfully",
         userSubscriptions,
       });
-  } catch (error) {
-    return res.status(500).json({ message: "server error", error });
+  }catch (error){
+    return res.status(500).json({message: "server error", error });
   }
 };
 
 export const getTotalSubscription = async (req, res) => {
   const id = req.user.user._id;
-  try {
+  try{
     const data = await subscription.find({ userId: id }).populate("topicId");
     const subscribeLength = data.length;
     return res
       .status(200)
-      .json({ message: "total Subscription fetched", count: subscribeLength });
-  } catch (error) {
+      .json({message: "total Subscription fetched",count: subscribeLength });
+  }catch (error){
     return res.status(500).json({ message: "interval server", error });
   }
 };

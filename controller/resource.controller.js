@@ -7,11 +7,11 @@ export const createResource = async (req, res) => {
     const id = req.user.user._id;
     const { description } = req.body;
     const { topicId } = req.params;
-    if (!description || !topicId) {
+    if (!description || !topicId){
       return res.status(400).json({ message: "Please fill all the fields" });
     }
     const topicData = await topics.findById(topicId);
-    if (!topicData) {
+    if (!topicData){
       return res.status(404).json({ message: "Topic not found" });
     }
     const resourceData = new resource({
@@ -22,14 +22,12 @@ export const createResource = async (req, res) => {
       dateCreated: Date.now(),
       lastUpdated: Date.now(),
     });
-
     await resourceData.save();
     return res.status(200).json({
       resourceData: resourceData,
       message: "resource created successfully",
     });
-  } catch (error) {
-    console.log(error);
+  } catch (error){
     return res.status(500).json({ message: "internal server error" });
   }
 };
