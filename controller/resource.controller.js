@@ -1,18 +1,30 @@
 import resource from "../model/resource.model.js";
 import topics from "../model/topics.model.js";
 import { v4 as uuidv4 } from "uuid";
+import {
+  CREATE_RESOURCE_MISSING_FIELDS,
+  CREATE_RESOURCE_TOPIC_NOT_FOUND,
+  CREATE_RESOURCE_SUCCESS,
+  CREATE_RESOURCE_FAILURE,
+} from "../constant/resource.constants.js";
+import {
+  TOPIC_DESCRIPTION_MISSING_TOPIC,
+  TOPIC_DESCRIPTION_RESOURCE_NOT_FOUND,
+  TOPIC_DESCRIPTION_FETCH_SUCCESS,
+  TOPIC_DESCRIPTION_FAILURE,
+} from "../constant/resource.constants.js";
 
 export const createResource = async (req, res) => {
   try {
     const id = req.user.user._id;
     const { description } = req.body;
     const { topicId } = req.params;
-    if (!description || !topicId) {
-      return res.status(400).json({ message: "Please fill all the fields" });
+    if (!description || !topicId){
+      return res.status(400).json({ message: CREATE_RESOURCE_MISSING_FIELDS });
     }
     const topicData = await topics.findById(topicId);
-    if (!topicData) {
-      return res.status(404).json({ message: "Topic not found" });
+    if (!topicData){
+      return res.status(404).json({ message: CREATE_RESOURCE_TOPIC_NOT_FOUND });
     }
     const resourceData = new resource({
       uuid: uuidv4(),
@@ -22,22 +34,20 @@ export const createResource = async (req, res) => {
       dateCreated: Date.now(),
       lastUpdated: Date.now(),
     });
-
     await resourceData.save();
     return res.status(200).json({
       resourceData: resourceData,
-      message: "resource created successfully",
+      message: CREATE_RESOURCE_SUCCESS,
     });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "internal server error" });
+  } catch (error){
+    return res.status(500).json({ message: CREATE_RESOURCE_FAILURE });
   }
 };
 
 export const topicDescription = async (req, res) => {
   const { topicId } = req.params;
   if (!topicId) {
-    return res.status(400).json({ message: "Topic ID is required" });
+    return res.status(400).json({ message: TOPIC_DESCRIPTION_MISSING_TOPIC });
   }
   try {
     const topicResources = await resource
@@ -45,21 +55,25 @@ export const topicDescription = async (req, res) => {
       .populate("topicId")
       .populate("createdBy");
     if (!topicResources) {
-      return res.status(400).json({ message: "resource is not find" });
+      return res
+        .status(400)
+        .json({ message: TOPIC_DESCRIPTION_RESOURCE_NOT_FOUND });
     }
     let topicData = [];
 
     if (topicResources.length > 0) {
       topicData = topicResources.map((data) => ({
-        createdBy: data.createdBy.username, // Extracting the username of the creator
+        createdBy: data.createdBy.username, 
         description: data.description,
         name: data.topicId.name,
-        date: data.dateCreated, // Extracting the description
+        date: data.dateCreated, 
       }));
     }
 
-    return res.status(200).json({ topicData });
+    return res
+      .status(200)
+      .json({ message: TOPIC_DESCRIPTION_FETCH_SUCCESS,topicData });
   } catch (error) {
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: TOPIC_DESCRIPTION_FAILURE });
   }
 };

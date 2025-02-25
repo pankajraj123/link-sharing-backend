@@ -1,3 +1,22 @@
+import {
+  CREATE_TOPIC_MISSING_FIELDS,
+  CREATE_TOPIC_ALREADY_EXISTS,
+  CREATE_TOPIC_SUCCESS,
+  CREATE_TOPIC_FAILURE,
+  GET_USER_TOPICS_SUCCESS,
+  GET_USER_TOPICS_FAILURE,
+  GET_PUBLIC_TOPIC_SUCCESS,
+  GET_PUBLIC_TOPIC_FAILURE,
+  DELETE_TOPIC_TOPIC_ID_REQUIRED,
+  DELETE_TOPIC_NOT_FOUND,
+  DELETE_TOPIC_SUCCESS,
+  DELETE_TOPIC_FAILURE,
+  EDIT_TOPIC_MISSING_FIELDS,
+  EDIT_TOPIC_NAME_EXISTS,
+  EDIT_TOPIC_SUCCESS,
+  EDIT_TOPIC_FAILURE,
+} from "../constant/topic.constant.js";
+
 import resource from "../model/resource.model.js";
 import topics from "../model/topics.model.js";
 import subscription from "../model/subscription.model.js";
@@ -8,11 +27,11 @@ export const createTopic = async (req, res) => {
     const { name, visibility } = req.body;
     const id = req.user.user._id;
     if (!name || !visibility) {
-      return res.status(400).json({ message: "All Fields are Required" });
+      return res.status(400).json({ message: CREATE_TOPIC_MISSING_FIELDS });
     }
     const isExist = await topics.findOne({ name });
     if (isExist) {
-      return res.status(409).json({ message: "Topic Already Exists" });
+      return res.status(409).json({ message: CREATE_TOPIC_ALREADY_EXISTS });
     }
     let topicData = new topics({
       name: name,
@@ -28,13 +47,11 @@ export const createTopic = async (req, res) => {
       seriousness: "Serious",
       createdAt: Date.now(),
     });
-    res
-      .status(201)
-      .json({ message: "Topic created successfully", topic: topicData });
+    res.status(201).json({ message: CREATE_TOPIC_SUCCESS, topic: topicData });
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Internal Server Error", error: error.message });
+      .json({ message: CREATE_TOPIC_FAILURE, error: error.message });
   }
 };
 
@@ -54,11 +71,11 @@ export const getUserTopics = async (req, res) => {
     return res.status(200).json({
       totalTopic: topicList.length,
       topic: topicsDetails,
-      message: "Topics fetched successfully",
+      message: GET_USER_TOPICS_SUCCESS,
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Server error", error });
+    res.status(500).json({ message: GET_USER_TOPICS_FAILURE, error });
   }
 };
 
@@ -78,38 +95,38 @@ export const getPublicTopic = async (req, res) => {
         dateCreated: topic.dateCreated,
       }));
       return res.status(200).json({
-        message: "Public topics fetched successfully",
+        message: GET_PUBLIC_TOPIC_SUCCESS,
         topic: publicTopic,
       });
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Server error", error });
+    res.status(500).json({ message: GET_PUBLIC_TOPIC_FAILURE, error });
   }
 };
 
 export const deleteTopic = async (req, res) => {
   const { topicId } = req.params;
   if (!topicId) {
-    return res.status(400).json({ message: "topicId is required" });
+    return res.status(400).json({ message: DELETE_TOPIC_TOPIC_ID_REQUIRED });
   }
   try {
     const topicData = await topics.findOne({ _id: topicId });
     if (!topicData) {
-      return res.status(404).json({ message: "Topic not found" });
+      return res.status(404).json({ message: DELETE_TOPIC_NOT_FOUND });
     } else {
       await topics.deleteOne({ _id: topicId });
       await subscription.deleteMany({ topicId: topicId });
       await resource.deleteMany({ topic: topicId });
       return res.status(200).json({
-        message: "Topic Delete Successfully And Resource Also deleted",
+        message: DELETE_TOPIC_SUCCESS,
       });
     }
   } catch (error) {
     console.log(error.message);
     return res
       .status(500)
-      .json({ message: "Internal Server Error", error: error.message });
+      .json({ message: DELETE_TOPIC_FAILURE, error: error.message });
   }
 };
 
@@ -117,27 +134,25 @@ export const editTopic = async (req, res) => {
   const { name, visibility } = req.body;
   const { topicId } = req.params;
   if (!name || !visibility || !topicId) {
-    return res
-      .status(400)
-      .json({ message: "Topic name , visibility or  topicId is required" });
+    return res.status(400).json({ message: EDIT_TOPIC_MISSING_FIELDS });
   }
   if (await topics.findOne({ name: name })) {
     return res
       .status(409)
-      .json({ success: false, message: "Topic name Exist Try Another Name" });
+      .json({ success: false, message: EDIT_TOPIC_NAME_EXISTS });
   }
   try {
     const topicData = await topics.findOne({ _id: topicId });
     if (!topicData) {
-      return res.status(404).json({ message: "Topic not found" });
+      return res.status(404).json({ message: DELETE_TOPIC_NOT_FOUND });
     }
     await topics.updateOne(
       { _id: topicId },
       { $set: { name: name, visibility: visibility } }
     );
-    return res.status(200).json({ message: "Topic Updated Successfully" });
+    return res.status(200).json({ message: EDIT_TOPIC_SUCCESS });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Internal Server Error", error });
+    return res.status(500).json({ message: EDIT_TOPIC_FAILURE, error });
   }
 };
