@@ -5,6 +5,9 @@ const resourceSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  Url: {
+    type: String,
+  },
   uuid: {
     type: String,
   },

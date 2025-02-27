@@ -17,8 +17,9 @@ import {
 export const createResource = async (req, res) => {
   try {
     const id = req.user.user._id;
-    const { description } = req.body;
+    const { description,Url} = req.body;
     const { topicId } = req.params;
+
     if (!description || !topicId){
       return res.status(400).json({ message: CREATE_RESOURCE_MISSING_FIELDS });
     }
@@ -28,9 +29,10 @@ export const createResource = async (req, res) => {
     }
     const resourceData = new resource({
       uuid: uuidv4(),
+      Url:Url,
       description: description,
       topicId: topicId,
-      createdBy: id,
+      createdBy:id,
       dateCreated: Date.now(),
       lastUpdated: Date.now(),
     });
@@ -54,16 +56,17 @@ export const topicDescription = async (req, res) => {
       .find({ topicId: topicId })
       .populate("topicId")
       .populate("createdBy");
-    if (!topicResources) {
+    if (!topicResources){
       return res
         .status(400)
         .json({ message: TOPIC_DESCRIPTION_RESOURCE_NOT_FOUND });
     }
-    let topicData = [];
+    let topicData =[];
 
     if (topicResources.length > 0) {
       topicData = topicResources.map((data) => ({
-        createdBy: data.createdBy.username, 
+        createdBy: data.createdBy.userName,
+        Url:data.Url,
         description: data.description,
         name: data.topicId.name,
         date: data.dateCreated, 
