@@ -67,7 +67,7 @@ export const login = async (req, res) => {
     }
     const isLogIn = await bcrypt.compare(password, user.password);
     const token = jwt.sign({ user }, process.env.SECRET_KEY, {
-      expiresIn: "1h",
+      expiresIn: "10d",
     });
     if(isLogIn){
       res.status(200).json({ success:true,
@@ -159,4 +159,55 @@ export const resetPassword = async (req, res) => {
   user.resetPasswordExpires = undefined;
   await user.save();
   res.status(200).send(RESET_PASSWORD_SUCCESS);
+};
+
+export const  getUserDetail=async(req,res)=>{
+  try {
+    const userId = req.user.user._id;
+    const user = await Users.findById(userId).select('-password -resetPasswordToken -resetPasswordExpires');
+    if (!user) {
+      return res.status(404).json({ success: false, message: LOGIN_USER_NOT_EXIST });
+    }
+   return  res.status(200).json({ success: true, user });
+  } catch (error) {
+   return  res.status(500).json({ success: false, message: LOGIN_FAILURE });
+  }
+}
+
+export const editProfile = async (req, res) => {
+  try {
+    const userId = req.user.user._id;
+    const { firstName, lastName, userName } = req.body;
+
+    if (!firstName || !lastName || !userName) {
+      return res.status(400).json({ success: false, message: REGISTER_MISSING_FIELDS });
+    }
+
+    const existingUser = await Users.findOne({ userName, _id: { $ne: userId } });
+    if (existingUser) {
+      return res.status(409).json({ success: false, message: REGISTER_CONFLICT });
+    }
+
+    const updatedUser = await Users.findByIdAndUpdate(
+      userId,
+      { firstName, lastName, userName },
+      { new: true }
+    ).select('-password -resetPasswordToken -resetPasswordExpires');
+
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, message: LOGIN_USER_NOT_EXIST });
+    }
+
+    const token = jwt.sign({ user: { _id: userId, userName } }, process.env.SECRET_KEY, {
+      expiresIn: "10d",
+    });
+
+    res.status(200).json({
+      success: true,
+      user: updatedUser,
+      token: token
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: REGISTER_FAILURE });
+  }
 };

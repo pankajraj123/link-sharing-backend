@@ -13,7 +13,7 @@ import {
   TOPIC_DESCRIPTION_FETCH_SUCCESS,
   TOPIC_DESCRIPTION_FAILURE,
 } from "../constant/resource.constants.js";
-
+import mongoose from'mongoose'
 export const createResource = async (req, res) => {
   try {
     const id = req.user.user._id;
@@ -54,7 +54,12 @@ export const topicDescription = async (req, res) => {
   try {
     const topicResources = await resource
       .find({ topicId: topicId })
-      .populate("topicId")
+      .populate({
+        path: "topicId",
+        populate: {
+          path: "createdBy",
+        },
+      })
       .populate("createdBy");
     if (!topicResources){
       return res
@@ -62,10 +67,11 @@ export const topicDescription = async (req, res) => {
         .json({ message: TOPIC_DESCRIPTION_RESOURCE_NOT_FOUND });
     }
     let topicData =[];
-
     if (topicResources.length > 0) {
       topicData = topicResources.map((data) => ({
+        _id:data._id,
         createdBy: data.createdBy.userName,
+        topicCreatedBy: data.topicId.createdBy.userName,
         Url:data.Url,
         description: data.description,
         name: data.topicId.name,
@@ -80,3 +86,48 @@ export const topicDescription = async (req, res) => {
     return res.status(500).json({ message: TOPIC_DESCRIPTION_FAILURE });
   }
 };
+export const userTopicResource = async (req, res) => {
+  try {
+    const userId = req.user.user._id;
+    const userResources = await resource
+      .find()
+      .populate({
+        path: "topicId",
+        populate: {
+          path: "createdBy", 
+        },
+      })
+      .populate("createdBy"); 
+
+    if (!userResources || userResources.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No resources or topics found for the user" });
+    }
+  const objectId= new mongoose.Types.ObjectId(userId);
+    const userResourceData = userResources
+      .filter(
+        (data) =>
+          objectId.equals(data.createdBy._id) ||
+          objectId.equals(data.topicId.createdBy._id)
+      ) 
+      .map((data) => ({
+        _id: data._id,
+        createdBy: data.createdBy.userName,
+        topicCreatedBy: data.topicId.createdBy.userName, 
+        Url: data.Url,
+        description: data.description,
+        name: data.topicId.name, 
+        date: data.dateCreated,
+      }));
+
+    return res.status(200).json({
+      message: "Topic description fetched successfully",
+      userResourceData,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error fetching resources" });
+  }
+};
+
