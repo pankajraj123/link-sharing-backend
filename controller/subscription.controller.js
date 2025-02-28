@@ -14,6 +14,7 @@ import {
   GET_TOTAL_SUBSCRIPTION_FAILURE,
 } from "../constant/subscription.constant.js";
 
+import resourceModel from "../model/resource.model.js";
 import topics from "../model/topics.model.js";
 import subscription from "../model/subscription.model.js";
 import { v4 as uuidv4 } from "uuid";
@@ -71,8 +72,9 @@ export const unsubscribe = async (req, res) => {
       return res.status(404).json({ message: UNSUBSCRIBE_NOT_FOUND });
     }
     await subscription.deleteOne({ topicId: topicId, userId: userId });
+    await resourceModel.deleteMany({ topicId: topicId, createdBy: userId });
     return res.status(200).json({ message: UNSUBSCRIBE_SUCCESS });
-  } catch (error) {
+  } catch (error){
     console.log(error);
     return res.status(500).json({ message: UNSUBSCRIBE_FAILURE, error });
   }
@@ -116,6 +118,6 @@ export const getTotalSubscription = async (req, res) => {
     console.log(error);
     return res
       .status(500)
-      .json({ message: GET_TOTAL_SUBSCRIPTION_FAILURE, error });
+      .json({message: GET_TOTAL_SUBSCRIPTION_FAILURE, error });
   }
 };

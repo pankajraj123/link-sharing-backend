@@ -5,8 +5,11 @@ const resourceSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  Url: {
+  filePath: {
     type: String,
+  },
+  Url:{
+     type: String,
   },
   uuid: {
     type: String,
