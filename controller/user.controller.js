@@ -22,7 +22,13 @@ import {
   FORGET_PASSWORD_FAILURE,
 } from "../constant/user.constant.js";
 import { RESET_PASSWORD_TOKEN_REQUIRED ,RESET_PASSWORD_INVALID_TOKEN,RESET_PASSWORD_SUCCESS} from "../constant/user.constant.js";
-
+import {
+  EDIT_PROFILE_CONFLICT_,
+  EDIT_PROFILE_FAILURE,
+  EDIT_PROFILE_MISSING_FIELDS,
+  EDIT_PROFILE_SUCCESS,
+  EDIT_PROFILE_NOT_EXIST,
+} from "../constant/user.constant.js";
 
 
 export const register = async (req, res) => {
@@ -58,10 +64,11 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ message:REGISTER_MISSING_FIELDS});
+    let lowerCaseEmail=email.toLowerCase();
+    if (!lowerCaseEmail || !password) {
+      return res.status(400).json({ message: REGISTER_MISSING_FIELDS });
     }
-    const user = await Users.findOne({ email });
+    const user = await Users.findOne({email:lowerCaseEmail });
     if (!user) {
       return res.status(404).json({ message:LOGIN_USER_NOT_EXIST});
     }
@@ -160,6 +167,7 @@ export const resetPassword = async (req, res) => {
   await user.save();
   res.status(200).send(RESET_PASSWORD_SUCCESS);
 };
+ 
 
 export const  getUserDetail=async(req,res)=>{
   try {
@@ -168,46 +176,67 @@ export const  getUserDetail=async(req,res)=>{
     if (!user) {
       return res.status(404).json({ success: false, message: LOGIN_USER_NOT_EXIST });
     }
+    console.log(user);
    return  res.status(200).json({ success: true, user });
   } catch (error) {
    return  res.status(500).json({ success: false, message: LOGIN_FAILURE });
   }
 }
 
+
 export const editProfile = async (req, res) => {
+
   try {
-    const userId = req.user.user._id;
+    const userId = req.user.user._id; 
     const { firstName, lastName, userName } = req.body;
-
     if (!firstName || !lastName || !userName) {
-      return res.status(400).json({ success: false, message: REGISTER_MISSING_FIELDS });
+      return res
+        .status(400)
+        .json({ success: false, message: EDIT_PROFILE_MISSING_FIELDS });
     }
-
-    const existingUser = await Users.findOne({ userName, _id: { $ne: userId } });
+    const existingUser = await Users.findOne({
+      userName,
+      _id: { $ne: userId },
+    });
     if (existingUser) {
-      return res.status(409).json({ success: false, message: REGISTER_CONFLICT });
+      return res
+        .status(409)
+        .json({ success: false, message: EDIT_PROFILE_CONFLICT_ });
     }
-
     const updatedUser = await Users.findByIdAndUpdate(
       userId,
       { firstName, lastName, userName },
       { new: true }
-    ).select('-password -resetPasswordToken -resetPasswordExpires');
-
+    ).select("-password -resetPasswordToken -resetPasswordExpires"); 
     if (!updatedUser) {
-      return res.status(404).json({ success: false, message: LOGIN_USER_NOT_EXIST });
+      return res
+        .status(404)
+        .json({ success: false, message: EDIT_PROFILE_NOT_EXIST });
     }
-
-    const token = jwt.sign({ user: { _id: userId, userName } }, process.env.SECRET_KEY, {
-      expiresIn: "10d",
-    });
-
+    const token = jwt.sign(
+      {
+        user: {
+          _id: userId,
+          userName: updatedUser.userName,
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName,
+          email: updatedUser.email,
+        },
+      },
+      process.env.SECRET_KEY,
+      {
+        expiresIn: "10d",
+      }
+    );
     res.status(200).json({
       success: true,
+      message: EDIT_PROFILE_SUCCESS,
       user: updatedUser,
-      token: token
+      token: token, 
     });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: REGISTER_FAILURE });
+    console.error(error);
+    res.status(500).json({ success: false, message: EDIT_PROFILE_FAILURE });
   }
 };

@@ -13,26 +13,26 @@ import {
   TOPIC_DESCRIPTION_FETCH_SUCCESS,
   TOPIC_DESCRIPTION_FAILURE,
 } from "../constant/resource.constants.js";
-import mongoose from'mongoose'
+import mongoose from "mongoose";
 export const createResource = async (req, res) => {
   try {
     const id = req.user.user._id;
-    const { description,Url} = req.body;
+    const { description, Url } = req.body;
     const { topicId } = req.params;
 
-    if (!description || !topicId){
+    if (!description || !topicId) {
       return res.status(400).json({ message: CREATE_RESOURCE_MISSING_FIELDS });
     }
     const topicData = await topics.findById(topicId);
-    if (!topicData){
+    if (!topicData) {
       return res.status(404).json({ message: CREATE_RESOURCE_TOPIC_NOT_FOUND });
     }
     const resourceData = new resource({
       uuid: uuidv4(),
-      Url:Url,
+      Url: Url,
       description: description,
       topicId: topicId,
-      createdBy:id,
+      createdBy: id,
       dateCreated: Date.now(),
       lastUpdated: Date.now(),
     });
@@ -41,7 +41,7 @@ export const createResource = async (req, res) => {
       resourceData: resourceData,
       message: CREATE_RESOURCE_SUCCESS,
     });
-  } catch (error){
+  } catch (error) {
     return res.status(500).json({ message: CREATE_RESOURCE_FAILURE });
   }
 };
@@ -61,27 +61,26 @@ export const topicDescription = async (req, res) => {
         },
       })
       .populate("createdBy");
-    if (!topicResources){
+    if (!topicResources) {
       return res
         .status(400)
         .json({ message: TOPIC_DESCRIPTION_RESOURCE_NOT_FOUND });
     }
-    let topicData =[];
+    let topicData = [];
     if (topicResources.length > 0) {
       topicData = topicResources.map((data) => ({
-        _id:data._id,
+        _id: data._id,
         createdBy: data.createdBy.userName,
         topicCreatedBy: data.topicId.createdBy.userName,
-        Url:data.Url,
+        Url: data.Url,
         description: data.description,
         name: data.topicId.name,
-        date: data.dateCreated, 
+        date: data.dateCreated,
       }));
     }
-
     return res
       .status(200)
-      .json({ message: TOPIC_DESCRIPTION_FETCH_SUCCESS,topicData });
+      .json({ message: TOPIC_DESCRIPTION_FETCH_SUCCESS, topicData });
   } catch (error) {
     return res.status(500).json({ message: TOPIC_DESCRIPTION_FAILURE });
   }
@@ -94,40 +93,40 @@ export const userTopicResource = async (req, res) => {
       .populate({
         path: "topicId",
         populate: {
-          path: "createdBy", 
+          path: "createdBy",
         },
       })
-      .populate("createdBy"); 
+      .populate("createdBy");
 
     if (!userResources || userResources.length === 0) {
       return res
         .status(404)
-        .json({ message: "No resources or topics found for the user" });
+        .json({ message: TOPIC_DESCRIPTION_RESOURCE_NOT_FOUND });
     }
-  const objectId= new mongoose.Types.ObjectId(userId);
+    const objectId = new mongoose.Types.ObjectId(userId);
+    console.log(objectId);
     const userResourceData = userResources
       .filter(
         (data) =>
           objectId.equals(data.createdBy._id) ||
           objectId.equals(data.topicId.createdBy._id)
-      ) 
+      )
       .map((data) => ({
         _id: data._id,
         createdBy: data.createdBy.userName,
-        topicCreatedBy: data.topicId.createdBy.userName, 
+        topicCreatedBy: data.topicId.createdBy.userName,
         Url: data.Url,
         description: data.description,
-        name: data.topicId.name, 
+        name: data.topicId.name,
         date: data.dateCreated,
       }));
 
     return res.status(200).json({
-      message: "Topic description fetched successfully",
+      message: TOPIC_DESCRIPTION_FETCH_SUCCESS,
       userResourceData,
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Error fetching resources" });
+    return res.status(500).json({ message: TOPIC_DESCRIPTION_FAILURE });
   }
 };
-
