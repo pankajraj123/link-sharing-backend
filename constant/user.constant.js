@@ -30,3 +30,11 @@ export const FORGET_PASSWORD_FAILURE = "Error sending email";
 export const RESET_PASSWORD_TOKEN_REQUIRED = "Token and new password are required";
 export const RESET_PASSWORD_INVALID_TOKEN = "Password reset token is invalid or has expired";
 export const RESET_PASSWORD_SUCCESS = "Your password has been reset successfully";
+
+
+// Constant  for Edit Profile
+export const EDIT_PROFILE_SUCCESS='Profile Update Successfully'
+export const EDIT_PROFILE_FAILURE='Unable to Update Profile '
+export const EDIT_PROFILE_MISSING_FIELDS='Fields Is Missing'
+export const EDIT_PROFILE_CONFLICT_='UserName is already Exist'
+export const EDIT_PROFILE_NOT_EXIST='User Is Not Exist'

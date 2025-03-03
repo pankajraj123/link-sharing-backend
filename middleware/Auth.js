@@ -9,6 +9,7 @@ export const authenticate = (req, res, next) => {
   if (!token){
     return res.status(403).json({ message: TOKEN_MISSING });
   }
+
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
     req.user = decoded;
